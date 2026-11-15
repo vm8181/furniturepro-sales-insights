@@ -1,0 +1,39 @@
+/// One row per sales person.
+table 'Sales Person'
+	lineageTag: 218395de-9751-59f9-a3c8-7b95387a654a
+
+	/// Sales person code.
+	column 'Sales Person ID'
+		dataType: string
+		isHidden
+		isKey
+		lineageTag: b7127181-03b4-5840-bb29-f8ecd881e136
+		summarizeBy: none
+		sourceColumn: Sales Person ID
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sales person name.
+	column 'Sales Person'
+		dataType: string
+		lineageTag: dc5fb767-4c65-5bc4-a857-e19b6ec9e0ad
+		summarizeBy: none
+		sourceColumn: Sales Person
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Sales Person' = m
+		mode: import
+		source =
+				let
+				    Sheet = Workbook{[Item = "SalesPerson", Kind = "Sheet"]}[Data],
+				    Headers = Table.PromoteHeaders(Sheet, [PromoteAllScalars = true]),
+				    Renamed = Table.RenameColumns(Headers, {{"Sales_person_ID", "Sales Person ID"}, {"Sales_person", "Sales Person"}}),
+				    Typed = Table.TransformColumnTypes(Renamed, {{"Sales Person ID", type text}, {"Sales Person", type text}}),
+				    Trimmed = Table.TransformColumns(Typed, {{"Sales Person ID", Text.Trim, type text}, {"Sales Person", Text.Trim, type text}}),
+				    Result = Table.Distinct(Table.SelectRows(Trimmed, each [Sales Person ID] <> null), {"Sales Person ID"})
+				in
+				    Result
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,34 @@
+/// The five headline insights listed on the first page. The sentences are measures, so they follow the slicers.
+table Insight
+	lineageTag: 58dc8dbb-a379-5e02-9e53-a45fd5663594
+
+	/// Insight number.
+	column No
+		dataType: int64
+		formatString: 0
+		lineageTag: 68b4f08f-a9d4-5e5d-bf17-d7cb09e6b72e
+		summarizeBy: none
+		sourceColumn: No
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Short name of the insight.
+	column Theme
+		dataType: string
+		lineageTag: a7f7a27f-6339-5526-9a90-24a130149127
+		summarizeBy: none
+		sourceColumn: Theme
+		sortByColumn: No
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Insight = m
+		mode: import
+		source =
+				let
+				    Result = #table(type table [No = Int64.Type, Theme = text], {{1, "Growth and target"}, {2, "Returns"}, {3, "Targets by state"}, {4, "Discounts"}, {5, "Customers"}})
+				in
+				    Result
+
+	annotation PBI_ResultType = Table
+

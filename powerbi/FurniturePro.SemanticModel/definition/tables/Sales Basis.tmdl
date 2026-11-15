@@ -1,0 +1,35 @@
+/// Choice for the target page: compare the target with sales after returns or before returns.
+table 'Sales Basis'
+	lineageTag: db29e950-4975-5c24-8490-59ca54a888db
+
+	/// After returns or Before returns.
+	column Basis
+		dataType: string
+		lineageTag: 5f15dadb-7bb7-5c87-a70a-edd80f175e8f
+		summarizeBy: none
+		sourceColumn: Basis
+		sortByColumn: 'Basis Order'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sort order of Basis.
+	column 'Basis Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6601508f-d932-5dc2-adcf-0a1c2c42de20
+		summarizeBy: none
+		sourceColumn: Basis Order
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Sales Basis' = m
+		mode: import
+		source =
+				let
+				    Result = #table(type table [Basis = text, #"Basis Order" = Int64.Type], {{"After returns", 1}, {"Before returns", 2}})
+				in
+				    Result
+
+	annotation PBI_ResultType = Table
+

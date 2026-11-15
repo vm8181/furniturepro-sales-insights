@@ -1,0 +1,27 @@
+/// Choices for how many most-returned products to show: 5, 10, 15 and so on, up to the number of returned products in the data.
+table 'Top N'
+	lineageTag: e440431f-a6e4-5b93-a4bc-b302e93467d3
+
+	/// Number of products to show.
+	column 'Top N'
+		dataType: int64
+		formatString: 0
+		lineageTag: f8b7ce82-a095-5582-8d91-d6b5a762301c
+		summarizeBy: none
+		sourceColumn: Top N
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Top N' = m
+		mode: import
+		source =
+				let
+				    ReturnedProducts = List.Count(List.Distinct(Table.SelectRows(OrdersBase, each [Returned] = "Yes")[Product ID])),
+				    Steps = List.Max({Number.RoundUp(ReturnedProducts / 5), 1}),
+				    Values = List.Numbers(5, Steps, 5),
+				    Result = Table.FromList(Values, Splitter.SplitByNothing(), type table [#"Top N" = Int64.Type])
+				in
+				    Result
+
+	annotation PBI_ResultType = Table
+

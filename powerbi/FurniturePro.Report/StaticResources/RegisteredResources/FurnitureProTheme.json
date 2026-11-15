@@ -1,0 +1,100 @@
+{
+  "name": "FurniturePro",
+  "dataColors": [
+    "#2563EB",
+    "#172033",
+    "#64748B",
+    "#16834A",
+    "#C2410C",
+    "#D97706",
+    "#0F766E",
+    "#94A3B8"
+  ],
+  "visualStyles": {
+    "cardVisual": {
+      "*": {
+        "*": [
+          {
+            "$id": "default",
+            "paddingUniform": 0,
+            "backgroundTransparency": 100
+          }
+        ],
+        "layout": [
+          {
+            "$id": "default",
+            "orientation": 1,
+            "alignment": "center",
+            "cellPadding": 0,
+            "paddingUniform": 0,
+            "backgroundShow": false
+          }
+        ],
+        "value": [
+          {
+            "$id": "default",
+            "fontFamily": "Calibri",
+            "bold": true,
+            "horizontalAlignment": "center"
+          }
+        ],
+        "label": [
+          {
+            "$id": "default",
+            "show": false
+          }
+        ],
+        "accentBar": [
+          {
+            "$id": "default",
+            "show": false
+          }
+        ],
+        "outline": [
+          {
+            "$id": "default",
+            "show": false
+          }
+        ],
+        "fillCustom": [
+          {
+            "$id": "default",
+            "show": false
+          }
+        ]
+      }
+    }
+  },
+  "textClasses": {
+    "callout": {
+      "fontFace": "Calibri"
+    },
+    "title": {
+      "fontFace": "Calibri"
+    },
+    "header": {
+      "fontFace": "Calibri"
+    },
+    "label": {
+      "fontFace": "Calibri"
+    },
+    "largeTitle": {
+      "fontFace": "Calibri"
+    },
+    "smallHeader": {
+      "fontFace": "Calibri"
+    },
+    "semiboldLabel": {
+      "fontFace": "Calibri"
+    },
+    "boldLabel": {
+      "fontFace": "Calibri"
+    }
+  },
+  "background": "#FFFFFF",
+  "foreground": "#172033",
+  "tableAccent": "#2563EB",
+  "good": "#16834A",
+  "neutral": "#D97706",
+  "bad": "#C2410C"
+}

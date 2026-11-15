@@ -1,0 +1,226 @@
+/// One row per order line. Returns, list price, discount amount and cost are added in Power Query.
+table Orders
+	lineageTag: 557035c0-3d8c-54dd-b86a-3a6ef56e9513
+
+	/// Line number from the sheet.
+	column 'Row ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e114554b-6f8d-5978-99ea-9207ec19f479
+		summarizeBy: none
+		sourceColumn: Row ID
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Order number. An order can have several lines.
+	column 'Order ID'
+		dataType: string
+		lineageTag: fcd1c01a-58da-5f60-830e-147de4f89558
+		summarizeBy: none
+		sourceColumn: Order ID
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Date of the order.
+	column 'Order Date'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: 44d29108-7b26-5ef3-9468-6e4a3abf6215
+		summarizeBy: none
+		sourceColumn: Order Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Shipping method.
+	column 'Ship Mode'
+		dataType: string
+		lineageTag: d58a6c64-01b1-5b63-93a7-f4ff999be6b9
+		summarizeBy: none
+		sourceColumn: Ship Mode
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Links to Customer.
+	column 'Customer ID'
+		dataType: string
+		isHidden
+		lineageTag: ac6f3da8-598c-5ef2-89b6-5ee4fc318a94
+		summarizeBy: none
+		sourceColumn: Customer ID
+
+		annotation SummarizationSetBy = Automatic
+
+	/// City of the order.
+	column City
+		dataType: string
+		lineageTag: 60ab6cd2-bb66-5522-a7b8-1423acf18b73
+		summarizeBy: none
+		sourceColumn: City
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Links to State.
+	column State
+		dataType: string
+		isHidden
+		lineageTag: 31c8e45b-e3a3-520c-b738-7e0875fab28e
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Links to Product.
+	column 'Product ID'
+		dataType: string
+		isHidden
+		lineageTag: f5a16644-a2a8-5512-8671-fe88ea9b6baa
+		summarizeBy: none
+		sourceColumn: Product ID
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sales value of the line, after discount, before returns.
+	column 'Sales Amount'
+		dataType: double
+		formatString: \$#,0.00
+		lineageTag: fe2ed924-cb1b-558a-924e-994f56fe0ce0
+		summarizeBy: sum
+		sourceColumn: Sales Amount
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Units on the line.
+	column Quantity
+		dataType: int64
+		formatString: #,0
+		lineageTag: 31601217-a0a4-5caa-b34a-822814630815
+		summarizeBy: sum
+		sourceColumn: Quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Discount rate given on the line.
+	column Discount
+		dataType: double
+		formatString: 0%
+		lineageTag: e5cc2e54-002f-5362-90fd-0b689f41f3fb
+		summarizeBy: none
+		sourceColumn: Discount
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Profit of the line.
+	column Profit
+		dataType: double
+		formatString: \$#,0.00
+		lineageTag: 1f401d8d-883a-5385-8ce6-cdfc87ad9434
+		summarizeBy: sum
+		sourceColumn: Profit
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Links to Sales Person.
+	column 'Sales Person ID'
+		dataType: string
+		isHidden
+		lineageTag: 177e5b84-663c-5bfc-87d7-8ed49f639c18
+		summarizeBy: none
+		sourceColumn: Sales Person ID
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Yes when the order is on the Returns sheet.
+	column Returned
+		dataType: string
+		lineageTag: 615b8ce0-1ecb-500f-a8da-f803596995b6
+		summarizeBy: none
+		sourceColumn: Returned
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sales Amount when the order was returned, else 0.
+	column 'Returned Amount'
+		dataType: double
+		formatString: \$#,0.00
+		lineageTag: 98052656-2580-58f7-a069-e1c5cf4793d4
+		summarizeBy: sum
+		sourceColumn: Returned Amount
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sales Amount minus Returned Amount.
+	column 'Net Sales'
+		dataType: double
+		formatString: \$#,0.00
+		lineageTag: e40eefec-9255-5278-8f27-446326ba5c56
+		summarizeBy: sum
+		sourceColumn: Net Sales
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Value before discount: Sales Amount / (1 - Discount).
+	column 'List Price'
+		dataType: double
+		formatString: \$#,0.00
+		lineageTag: 2378c124-42d5-587c-b4a0-800bde52c9a8
+		summarizeBy: sum
+		sourceColumn: List Price
+
+		annotation SummarizationSetBy = Automatic
+
+	/// List Price minus Sales Amount.
+	column 'Discount Amount'
+		dataType: double
+		formatString: \$#,0.00
+		lineageTag: ea4e622c-c6f7-584a-a259-dab4a8e9a5de
+		summarizeBy: sum
+		sourceColumn: Discount Amount
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sales Amount minus Profit.
+	column Cost
+		dataType: double
+		formatString: \$#,0.00
+		lineageTag: 9a32471c-2ea4-51a8-a0f5-2ff095b1fadb
+		summarizeBy: sum
+		sourceColumn: Cost
+
+		annotation SummarizationSetBy = Automatic
+
+	/// No discount, 1% to 20%, or Above 20%.
+	column 'Discount Band'
+		dataType: string
+		lineageTag: a599f3ec-6739-55a1-b2a7-7d3781da09f3
+		summarizeBy: none
+		sourceColumn: Discount Band
+		sortByColumn: 'Discount Band Order'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sort order of Discount Band.
+	column 'Discount Band Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ce4ae34b-475a-56dc-8764-0ef2e33da19a
+		summarizeBy: none
+		sourceColumn: Discount Band Order
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Orders = m
+		mode: import
+		source =
+				let
+				    Source = OrdersBase,
+				    // Segment lives in Customer and Region in State, so they are not repeated here
+				    Result = Table.RemoveColumns(Source, {"Segment", "Region"})
+				in
+				    Result
+
+	annotation PBI_ResultType = Table
+

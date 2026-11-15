@@ -1,0 +1,53 @@
+/// One row per state, with its region and the region head.
+table State
+	lineageTag: 63c931d0-11f1-5c13-b493-93e490262356
+
+	/// State name.
+	column State
+		dataType: string
+		isKey
+		lineageTag: aa95d57d-4742-50a2-b0ea-44b96db9e3f7
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Central, East, South or West.
+	column Region
+		dataType: string
+		lineageTag: ab690762-5b23-5a9b-b902-12ff57699a55
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Person responsible for the region.
+	column 'Region Head'
+		dataType: string
+		lineageTag: d5cca4f5-a4f4-5413-955f-1990702586bc
+		summarizeBy: none
+		sourceColumn: Region Head
+
+		annotation SummarizationSetBy = Automatic
+
+	partition State = m
+		mode: import
+		source =
+				let
+				    FromOrders = Table.Distinct(Table.SelectColumns(OrdersBase, {"State", "Region"}), {"State"}),
+				    // A state that has a target but no orders yet still needs a row
+				    KnownStates = List.Buffer(FromOrders[State]),
+				    TargetOnly = Table.SelectRows(Table.Distinct(Table.SelectColumns(TargetBase, {"State"})), each not List.Contains(KnownStates, [State])),
+				    TargetOnlyWithRegion = Table.AddColumn(TargetOnly, "Region", each "Not assigned", type text),
+				    AllStates = Table.Combine({FromOrders, TargetOnlyWithRegion}),
+				    HeadsSheet = Table.PromoteHeaders(Workbook{[Item = "Region Heads", Kind = "Sheet"]}[Data], [PromoteAllScalars = true]),
+				    Heads = Table.TransformColumns(Table.RenameColumns(Table.SelectColumns(HeadsSheet, {"Person", "Region"}), {{"Person", "Region Head"}}), {{"Region Head", each Text.Trim(Text.From(_)), type text}, {"Region", each Text.Trim(Text.From(_)), type text}}),
+				    Joined = Table.NestedJoin(AllStates, {"Region"}, Heads, {"Region"}, "Head", JoinKind.LeftOuter),
+				    Expanded = Table.ExpandTableColumn(Joined, "Head", {"Region Head"}),
+				    NoNulls = Table.TransformColumns(Expanded, {{"Region Head", each if _ = null then "Not assigned" else _, type text}}),
+				    Result = Table.Sort(NoNulls, {{"State", Order.Ascending}})
+				in
+				    Result
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,101 @@
+/// One row per day. Starts on 1 January of the first year in the data and ends on 31 December of the last year, so it grows with the data.
+table Date
+	lineageTag: 5a113ac1-b3e0-5e4c-a04f-885f56addf90
+	dataCategory: Time
+
+	/// Calendar day.
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: dd mmm yyyy
+		lineageTag: 9e946a5d-d9ac-5066-8931-e06be640a98f
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Calendar year.
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: f1e2a018-a6f3-5653-a21f-49cdf2f76d11
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Q1 to Q4.
+	column Quarter
+		dataType: string
+		lineageTag: ba4fecf9-f031-520b-84e7-2fb653836e33
+		summarizeBy: none
+		sourceColumn: Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	/// 1 to 12, sorts the month names.
+	column 'Month Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2ddc34ab-c033-5cff-adb5-35eb5a90da91
+		summarizeBy: none
+		sourceColumn: Month Number
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Short month name.
+	column Month
+		dataType: string
+		lineageTag: 79904e4e-b934-5d2c-82f7-ac51b04f422a
+		summarizeBy: none
+		sourceColumn: Month
+		sortByColumn: 'Month Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// First day of the month.
+	column 'Month Start'
+		dataType: dateTime
+		formatString: mmm yyyy
+		lineageTag: b01d1872-45d2-5b8d-90bd-30ad34c573ca
+		summarizeBy: none
+		sourceColumn: Month Start
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Year and month, for example 2021-03.
+	column 'Year Month'
+		dataType: string
+		lineageTag: a28063ba-79af-564d-a094-e769a273dbe6
+		summarizeBy: none
+		sourceColumn: Year Month
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Date = m
+		mode: import
+		source =
+				let
+				    AllDates = List.Combine({OrdersBase[Order Date], TargetBase[Month Start]}),
+				    FirstDate = List.Min(AllDates),
+				    LastDate = List.Max(AllDates),
+				    StartDate = #date(Date.Year(FirstDate), 1, 1),
+				    EndDate = #date(Date.Year(LastDate), 12, 31),
+				    Days = List.Dates(StartDate, Duration.Days(EndDate - StartDate) + 1, #duration(1, 0, 0, 0)),
+				    AsTable = Table.FromList(Days, Splitter.SplitByNothing(), type table [Date = date]),
+				    AddYear = Table.AddColumn(AsTable, "Year", each Date.Year([Date]), Int64.Type),
+				    AddQuarter = Table.AddColumn(AddYear, "Quarter", each "Q" & Text.From(Date.QuarterOfYear([Date])), type text),
+				    AddMonthNumber = Table.AddColumn(AddQuarter, "Month Number", each Date.Month([Date]), Int64.Type),
+				    AddMonth = Table.AddColumn(AddMonthNumber, "Month", each Date.ToText([Date], "MMM", "en-US"), type text),
+				    AddMonthStart = Table.AddColumn(AddMonth, "Month Start", each Date.StartOfMonth([Date]), type date),
+				    AddYearMonth = Table.AddColumn(AddMonthStart, "Year Month", each Date.ToText([Date], "yyyy-MM", "en-US"), type text)
+				in
+				    AddYearMonth
+
+	annotation PBI_ResultType = Table
+

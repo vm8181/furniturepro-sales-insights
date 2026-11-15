@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "FurniturePro"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "fcc62237-fd6b-5949-85c3-020eb725caa9"
+  }
+}

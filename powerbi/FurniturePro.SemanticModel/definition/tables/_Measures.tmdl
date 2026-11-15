@@ -1,0 +1,1304 @@
+/// All measures, in display folders.
+table _Measures
+	lineageTag: 044a9f91-f011-58db-be7d-61ee11e6f9cc
+
+	/// Last year that has orders in the data.
+	measure 'Latest Year' = YEAR ( CALCULATE ( MAX ( Orders[Order Date] ), REMOVEFILTERS () ) )
+		formatString: 0
+		displayFolder: Base
+		lineageTag: f1f62267-b0a2-5306-b9a8-02753063e9c1
+
+	/// The year picked in the Year slicer. With nothing picked it is the latest year in the data, so the report moves on by itself when a new year arrives.
+	measure 'Selected Year' = COALESCE ( SELECTEDVALUE ( 'Date'[Year] ), [Latest Year] )
+		formatString: 0
+		displayFolder: Base
+		lineageTag: b871da1a-34f1-5a2a-ab47-6a07d9358dc9
+
+	/// Sales Amount of all order lines in the selected year.
+	measure 'Sales Before Returns' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( SUM ( Orders[Sales Amount] ), 'Date'[Year] = y )
+		formatString: \$#,0
+		displayFolder: Base
+		lineageTag: a9417726-b52e-50f9-bbe5-6ce6d0396fb1
+
+	/// Sales Amount of order lines whose order was returned.
+	measure 'Returned Sales' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( SUM ( Orders[Returned Amount] ), 'Date'[Year] = y )
+		formatString: \$#,0
+		displayFolder: Base
+		lineageTag: d8c4291f-4ed0-561e-bd31-efc537df4050
+
+	/// Required KPI: Sales minus Returns, selected year.
+	measure 'Total Sales' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( SUM ( Orders[Net Sales] ), 'Date'[Year] = y )
+		formatString: \$#,0
+		displayFolder: Base
+		lineageTag: 548605a1-5399-523c-a608-773a226b78b1
+
+	/// Profit of all order lines in the selected year.
+	measure Profit =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( SUM ( Orders[Profit] ), 'Date'[Year] = y )
+		formatString: \$#,0
+		displayFolder: Base
+		lineageTag: 5b666d22-579d-5607-a6bb-5fb8e7b5a2a3
+
+	/// Required KPI: Profit divided by Sales Amount.
+	measure '% Margin' = DIVIDE ( [Profit], [Sales Before Returns] )
+		formatString: 0.0%
+		displayFolder: Base
+		lineageTag: 2944917a-1cca-512c-a487-7c488c956093
+
+	/// Units sold.
+	measure Quantity =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( SUM ( Orders[Quantity] ), 'Date'[Year] = y )
+		formatString: #,0
+		displayFolder: Base
+		lineageTag: 677373f5-9ff1-514f-b66f-7cbc111575d9
+
+	/// Number of orders.
+	measure Orders =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( DISTINCTCOUNT ( Orders[Order ID] ), 'Date'[Year] = y )
+		formatString: #,0
+		displayFolder: Base
+		lineageTag: 575609aa-bbc9-5ba7-99c4-e0e781ba736f
+
+	/// Number of order lines.
+	measure 'Order Lines' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( COUNTROWS ( Orders ), 'Date'[Year] = y )
+		formatString: #,0
+		displayFolder: Base
+		lineageTag: b07d0fea-16b1-5f1c-aff8-459e3fcac729
+
+	/// Customers with at least one order in the selected year.
+	measure Customers =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( DISTINCTCOUNT ( Orders[Customer ID] ), 'Date'[Year] = y )
+		formatString: #,0
+		displayFolder: Base
+		lineageTag: 5c3c1531-7cfe-5520-953e-cfdaa78ec5ff
+
+	/// Value given away as discount: list price minus sales amount.
+	measure 'Discount Amount' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( SUM ( Orders[Discount Amount] ), 'Date'[Year] = y )
+		formatString: \$#,0
+		displayFolder: Base
+		lineageTag: 702b5024-c809-51dc-8cc2-7b4534c2c9f2
+
+	/// Sales value before any discount.
+	measure 'List Sales' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( SUM ( Orders[List Price] ), 'Date'[Year] = y )
+		formatString: \$#,0
+		displayFolder: Base
+		lineageTag: c9fde998-1e21-5010-a58c-9965c83712ff
+
+	/// Simple average of the discount rate over order lines.
+	measure '% Avg Discount' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( AVERAGE ( Orders[Discount] ), 'Date'[Year] = y )
+		formatString: 0.0%
+		displayFolder: Base
+		lineageTag: bf7b6197-db80-5d1e-a417-417d702eab09
+
+	/// Discount amount as a share of list price (weighted by value).
+	measure '% Discount Given' = DIVIDE ( [Discount Amount], [List Sales] )
+		formatString: 0.0%
+		displayFolder: Base
+		lineageTag: 4d3318a8-156a-5308-8e9b-597b23b8283f
+
+	/// Total Sales in the year before the selected year.
+	measure 'Total Sales LY' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( [Total Sales], 'Date'[Year] = y - 1 )
+		formatString: \$#,0
+		displayFolder: Last year
+		lineageTag: 6fffe64e-b3e5-5c3c-9bfb-6c7b052270af
+
+	/// Profit in the year before the selected year.
+	measure 'Profit LY' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( [Profit], 'Date'[Year] = y - 1 )
+		formatString: \$#,0
+		displayFolder: Last year
+		lineageTag: 02d95bd1-d0a0-5a29-8f89-81affc5c2ead
+
+	/// Orders in the year before the selected year.
+	measure 'Orders LY' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( [Orders], 'Date'[Year] = y - 1 )
+		formatString: #,0
+		displayFolder: Last year
+		lineageTag: c9e58baa-56aa-5767-81de-6785efdbc5bf
+
+	/// Customers in the year before the selected year.
+	measure 'Customers LY' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( [Customers], 'Date'[Year] = y - 1 )
+		formatString: #,0
+		displayFolder: Last year
+		lineageTag: f6ad4dfd-9a41-5e73-8f75-6b20b4753ed3
+
+	/// Sales Before Returns in the year before the selected year.
+	measure 'Sales Before Returns LY' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( [Sales Before Returns], 'Date'[Year] = y - 1 )
+		formatString: \$#,0
+		displayFolder: Last year
+		lineageTag: a051c4b4-46d6-560d-bc26-83d6b6e2f1af
+
+	/// Returned Sales in the year before the selected year.
+	measure 'Returned Sales LY' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( [Returned Sales], 'Date'[Year] = y - 1 )
+		formatString: \$#,0
+		displayFolder: Last year
+		lineageTag: a891ec47-281b-52a8-b6d2-587992e4da1a
+
+	/// Growth of Total Sales on the year before.
+	measure 'Total Sales YoY %' =
+			VAR ly = [Total Sales LY]
+			RETURN
+			    IF ( ly <> 0, DIVIDE ( [Total Sales] - ly, ly ) )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Last year
+		lineageTag: 7c0a83a0-6e48-51fe-9166-dde05e89132c
+
+	/// Small line under the Total Sales card.
+	measure 'Total Sales YoY Text' =
+			VAR g = [Total Sales YoY %]
+			RETURN
+			    IF ( ISBLANK ( g ), "No data for " & ( [Selected Year] - 1 ), IF ( g >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( g ), "0.0%" ) & " vs " & ( [Selected Year] - 1 ) )
+		displayFolder: Card text
+		lineageTag: 26f7b405-42a9-567c-8b85-9c9595ad69aa
+
+	/// Growth of Profit on the year before.
+	measure 'Profit YoY %' =
+			VAR ly = [Profit LY]
+			RETURN
+			    IF ( ly <> 0, DIVIDE ( [Profit] - ly, ly ) )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Last year
+		lineageTag: 27e5aeb7-f4df-5f9d-97ab-69f59cfe3a34
+
+	/// Small line under the Profit card.
+	measure 'Profit YoY Text' =
+			VAR g = [Profit YoY %]
+			RETURN
+			    IF ( ISBLANK ( g ), "No data for " & ( [Selected Year] - 1 ), IF ( g >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( g ), "0.0%" ) & " vs " & ( [Selected Year] - 1 ) )
+		displayFolder: Card text
+		lineageTag: a7168a0b-1a41-58dc-8c52-4f5063ab362c
+
+	/// Growth of Orders on the year before.
+	measure 'Orders YoY %' =
+			VAR ly = [Orders LY]
+			RETURN
+			    IF ( ly <> 0, DIVIDE ( [Orders] - ly, ly ) )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Last year
+		lineageTag: d9133db6-7a70-5289-85ab-4f236b05b654
+
+	/// Small line under the Orders card.
+	measure 'Orders YoY Text' =
+			VAR g = [Orders YoY %]
+			RETURN
+			    IF ( ISBLANK ( g ), "No data for " & ( [Selected Year] - 1 ), IF ( g >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( g ), "0.0%" ) & " vs " & ( [Selected Year] - 1 ) )
+		displayFolder: Card text
+		lineageTag: 80ca16d7-4d4c-5da8-a4ee-7ba76a533d84
+
+	/// Growth of Customers on the year before.
+	measure 'Customers YoY %' =
+			VAR ly = [Customers LY]
+			RETURN
+			    IF ( ly <> 0, DIVIDE ( [Customers] - ly, ly ) )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Last year
+		lineageTag: 3d946a77-6d7a-5e36-8463-552ba2967383
+
+	/// Small line under the Customers card.
+	measure 'Customers YoY Text' =
+			VAR g = [Customers YoY %]
+			RETURN
+			    IF ( ISBLANK ( g ), "No data for " & ( [Selected Year] - 1 ), IF ( g >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( g ), "0.0%" ) & " vs " & ( [Selected Year] - 1 ) )
+		displayFolder: Card text
+		lineageTag: b5481d92-d41b-582f-bfe5-8761b4f94339
+
+	/// % Margin in the year before.
+	measure '% Margin LY' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( [% Margin], 'Date'[Year] = y - 1 )
+		formatString: 0.0%
+		displayFolder: Last year
+		lineageTag: abada12f-95ae-5ab7-abcd-a8d6332524ab
+
+	/// Small line under the % Margin card.
+	measure '% Margin Text' =
+			VAR ly = [% Margin LY]
+			RETURN
+			    IF ( ISBLANK ( ly ), "No data for " & ( [Selected Year] - 1 ), FORMAT ( ly, "0.0%" ) & " in " & ( [Selected Year] - 1 ) )
+		displayFolder: Card text
+		lineageTag: 44b36d86-fe7b-5a56-9886-695e6acf28ea
+
+	/// Tells the reader which year the page is showing.
+	measure 'Year Shown' = "Year shown: " & [Selected Year]
+		displayFolder: Card text
+		lineageTag: 30066e28-39e0-57ae-8505-ab88e4602248
+
+	/// Total sales for a year of the Trend Year table. Used on the 4-year charts, which ignore the Year slicer.
+	measure 'Sales Trend' =
+			VAR ty = SELECTEDVALUE ( 'Trend Year'[Year] )
+			RETURN
+			    IF ( NOT ISBLANK ( ty ), CALCULATE ( SUM ( Orders[Net Sales] ), 'Date'[Year] = ty ) )
+		formatString: \$#,0
+		displayFolder: Trend
+		lineageTag: 65ad5759-6114-57fd-876d-c4e7a37d215b
+
+	/// Return rate for a year of the Trend Year table.
+	measure 'Return Rate Trend' =
+			VAR ty = SELECTEDVALUE ( 'Trend Year'[Year] )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( ty ),
+			        DIVIDE (
+			            CALCULATE ( SUM ( Orders[Returned Amount] ), 'Date'[Year] = ty ),
+			            CALCULATE ( SUM ( Orders[Sales Amount] ), 'Date'[Year] = ty )
+			        )
+			    )
+		formatString: 0.0%
+		displayFolder: Trend
+		lineageTag: 4a6816e9-bf27-550b-867d-249b0d7bcb91
+
+	/// Sales target for the selected year. Targets exist per state and month only, so it is blank when a segment, category, sales person or city is selected.
+	measure Target =
+			VAR y = [Selected Year]
+			RETURN
+			    IF (
+			        NOT ( ISFILTERED ( Customer ) || ISFILTERED ( Product ) || ISFILTERED ( 'Sales Person' ) || ISFILTERED ( Orders[City] ) ),
+			        CALCULATE ( SUM ( 'Sales Target'[Target] ), 'Date'[Year] = y )
+			    )
+		formatString: \$#,0
+		displayFolder: Target
+		lineageTag: 4062250f-9761-59a3-8b27-6aa5f1bfdabd
+
+	/// Sales compared with the target: after returns unless the Sales basis slicer says before returns.
+	measure 'Sales For Target' = IF ( SELECTEDVALUE ( 'Sales Basis'[Basis], "After returns" ) = "After returns", [Total Sales], [Sales Before Returns] )
+		formatString: \$#,0
+		displayFolder: Target
+		lineageTag: 85b0cfe3-8894-5408-82db-93176736011d
+
+	/// Required KPI: sales divided by target.
+	measure '% Target Achieved' = DIVIDE ( [Sales For Target] + 0, [Target] )
+		formatString: 0.0%
+		displayFolder: Target
+		lineageTag: 5cdbf871-4c24-5048-9a9c-63e094eeb9b8
+
+	/// Sales minus target. Negative means the target was missed.
+	measure 'Target Gap' = IF ( NOT ISBLANK ( [Target] ), [Sales For Target] - [Target] )
+		formatString: \$#,0;-\$#,0;\$0
+		displayFolder: Target
+		lineageTag: 9931b222-fe1a-567b-ae10-ee7d69439597
+
+	/// Achieved when sales reach the target.
+	measure 'Target Status' = IF ( NOT ISBLANK ( [Target] ), IF ( [% Target Achieved] >= 1, "Achieved", "Not achieved" ) )
+		displayFolder: Target
+		lineageTag: a374a4b3-08fd-5720-8cc7-7f4b95549726
+
+	/// Green when the target is achieved, orange-red when not.
+	measure 'Target Colour' = IF ( ISBLANK ( [Target] ), "#172033", IF ( [% Target Achieved] >= 1, "#16834A", "#C2410C" ) )
+		displayFolder: Target
+		lineageTag: 2ea6cfb4-1c97-5d30-b06a-b1115245a9bf
+
+	/// Small line under the % Target Achieved card.
+	measure 'Target Text' =
+			VAR g = [Target Gap]
+			RETURN
+			    IF ( ISBLANK ( [Target] ), "Targets are set by state only", IF ( g >= 0, "Above target by ", "Short of target by " ) & FORMAT ( DIVIDE ( ABS ( g ), 1000 ), "\$#,0.0" ) & "K" )
+		displayFolder: Card text
+		lineageTag: 9c6df9a1-796a-50d5-ad0f-0d3ce0368884
+
+	/// Small line showing the target.
+	measure 'Target Card Text' = "Target " & FORMAT ( DIVIDE ( [Target], 1000 ), "\$#,0.0" ) & "K"
+		displayFolder: Card text
+		lineageTag: 8cd0e4b5-56ef-5b30-b03b-c0f0a36702c7
+
+	/// States that reached their target.
+	measure 'States Achieved' = COUNTROWS ( FILTER ( VALUES ( State[State] ), NOT ISBLANK ( [Target] ) && [% Target Achieved] >= 1 ) ) + 0
+		formatString: #,0
+		displayFolder: Target
+		lineageTag: 680544fa-5e00-5d12-90e5-a03fc50c3f58
+
+	/// States that have a target.
+	measure 'States With Target' = COUNTROWS ( FILTER ( VALUES ( State[State] ), NOT ISBLANK ( [Target] ) ) ) + 0
+		formatString: #,0
+		displayFolder: Target
+		lineageTag: 7707d443-e324-5a45-a5cc-980a4e48b868
+
+	/// For example 34 of 49.
+	measure 'States Achieved Text' = [States Achieved] & " of " & [States With Target]
+		displayFolder: Target
+		lineageTag: df7a003b-df6f-57dc-8cc7-9a51c4896fe0
+
+	/// Small line under the states card.
+	measure 'States Missed Text' = ( [States With Target] - [States Achieved] ) & " states missed target"
+		displayFolder: Card text
+		lineageTag: a3705808-5b05-58ff-9dc7-1d16af9eeff6
+
+	/// Regions that reached their target.
+	measure 'Regions Achieved' = SUMX ( VALUES ( State[Region] ), IF ( NOT ISBLANK ( [Target] ) && [% Target Achieved] >= 1, 1, 0 ) )
+		formatString: #,0
+		displayFolder: Target
+		lineageTag: a8219f0e-eb2a-56ff-958d-7eb3ede2592a
+
+	/// Regions that have a target.
+	measure 'Regions With Target' = SUMX ( VALUES ( State[Region] ), IF ( NOT ISBLANK ( [Target] ), 1, 0 ) )
+		formatString: #,0
+		displayFolder: Target
+		lineageTag: e3a8a542-7cca-5a37-bcd5-fcb5912b95d1
+
+	/// For example 3 of 4.
+	measure 'Regions Achieved Text' = [Regions Achieved] & " of " & [Regions With Target]
+		displayFolder: Target
+		lineageTag: 80b58526-4eb4-562e-9b1b-0d4f4d706937
+
+	/// Small line: months that reached the monthly target.
+	measure 'Months Achieved Text' =
+			VAR t = FILTER ( VALUES ( 'Date'[Month Number] ), NOT ISBLANK ( [Target] ) )
+			RETURN
+			    COUNTROWS ( FILTER ( t, [% Target Achieved] >= 1 ) ) + 0 & " of " & COUNTROWS ( t ) + 0 & " months on target"
+		displayFolder: Card text
+		lineageTag: 244bb4ba-51b0-5439-a868-a30680b4495c
+
+	/// Small line: which sales the target is compared with.
+	measure 'Basis Text' = "Sales " & LOWER ( SELECTEDVALUE ( 'Sales Basis'[Basis], "After returns" ) )
+		displayFolder: Card text
+		lineageTag: 9e7f2cb4-3160-5714-b63e-fea1d84e8f22
+
+	/// Returned sales as a share of sales before returns.
+	measure 'Return Rate %' = DIVIDE ( [Returned Sales], [Sales Before Returns] )
+		formatString: 0.0%
+		displayFolder: Returns
+		lineageTag: 44b4d30a-03a7-557a-bbee-c2861e010421
+
+	/// Return rate in the year before.
+	measure 'Return Rate LY' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( [Return Rate %], 'Date'[Year] = y - 1 )
+		formatString: 0.0%
+		displayFolder: Returns
+		lineageTag: d160700b-e6e6-50bc-aad1-453d0fbc1821
+
+	/// Small line under the return rate card.
+	measure 'Return Rate Text' =
+			VAR ly = [Return Rate LY]
+			RETURN
+			    IF ( ISBLANK ( ly ), "No data for " & ( [Selected Year] - 1 ), FORMAT ( ly, "0.0%" ) & " in " & ( [Selected Year] - 1 ) )
+		displayFolder: Card text
+		lineageTag: 3df1d49d-24c2-5761-acf1-f507c2a6e3d4
+
+	/// Small line under the returned sales card.
+	measure 'Returned Sales Text' =
+			VAR ly = [Returned Sales LY]
+			RETURN
+			    IF ( ISBLANK ( ly ), "No data for " & ( [Selected Year] - 1 ), FORMAT ( DIVIDE ( ly, 1000 ), "\$#,0.0" ) & "K" & " in " & ( [Selected Year] - 1 ) )
+		displayFolder: Card text
+		lineageTag: 9f96c199-e0d8-5060-a620-40bd3d9465c5
+
+	/// Orders that were returned.
+	measure 'Returned Orders' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( DISTINCTCOUNT ( Orders[Order ID] ), Orders[Returned] = "Yes", 'Date'[Year] = y )
+		formatString: #,0
+		displayFolder: Returns
+		lineageTag: 2cc90298-3038-58fc-a7db-c6f15915d556
+
+	/// Small line under the returned orders card.
+	measure 'Returned Orders Text' = "of " & FORMAT ( [Orders], "#,0" ) & " orders"
+		displayFolder: Card text
+		lineageTag: 780bda68-10d3-5602-bede-72fdaa7d39a2
+
+	/// Units on returned orders.
+	measure 'Returned Quantity' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( SUM ( Orders[Quantity] ), Orders[Returned] = "Yes", 'Date'[Year] = y )
+		formatString: #,0
+		displayFolder: Returns
+		lineageTag: c53a4818-2c3f-54ec-8410-6c2d896d82df
+
+	/// Small line under the returned quantity card.
+	measure 'Returned Quantity Text' = "of " & FORMAT ( [Quantity], "#,0" ) & " units sold"
+		displayFolder: Card text
+		lineageTag: 38b82ed2-6a44-5007-a8dd-5e5da8489cd8
+
+	/// Profit that was booked on returned orders.
+	measure 'Returned Profit' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( SUM ( Orders[Profit] ), Orders[Returned] = "Yes", 'Date'[Year] = y )
+		formatString: \$#,0
+		displayFolder: Returns
+		lineageTag: 39e9e0b5-3bde-5241-90c7-ae85700588fe
+
+	/// Number of products picked in the Top N slicer (5 when nothing is picked).
+	measure 'Top N Value' = SELECTEDVALUE ( 'Top N'[Top N], 5 )
+		formatString: 0
+		displayFolder: Returns
+		lineageTag: 065f4440-07c0-5f26-b11f-25a1b1e6fad5
+
+	/// Rank of a product by returned sales, 1 = most returned.
+	measure 'Return Rank' = IF ( [Returned Sales] > 0, RANKX ( ALLSELECTED ( Product[Product Name] ), [Returned Sales],, DESC, SKIP ) )
+		formatString: 0
+		displayFolder: Returns
+		lineageTag: adc9a262-462a-5a49-9626-0d33fefe4603
+
+	/// Returned sales, only for products inside the chosen Top N.
+	measure 'Returned Sales Top N' = IF ( NOT ISBLANK ( [Return Rank] ) && [Return Rank] <= [Top N Value], [Returned Sales] )
+		formatString: \$#,0
+		displayFolder: Returns
+		lineageTag: 47bf6b5b-6dd2-5285-9b45-ec6f3f8ae3f2
+
+	/// Returned units, only for products inside the chosen Top N.
+	measure 'Returned Quantity Top N' = IF ( NOT ISBLANK ( [Return Rank] ) && [Return Rank] <= [Top N Value], [Returned Quantity] )
+		formatString: #,0
+		displayFolder: Returns
+		lineageTag: e79f4e59-4c43-5264-bb78-72321a34be96
+
+	/// Returned orders, only for products inside the chosen Top N.
+	measure 'Returned Orders Top N' = IF ( NOT ISBLANK ( [Return Rank] ) && [Return Rank] <= [Top N Value], [Returned Orders] )
+		formatString: #,0
+		displayFolder: Returns
+		lineageTag: aa4dd198-9207-52b7-801c-6fa9550e3f90
+
+	/// Rank, only for products inside the chosen Top N.
+	measure 'Return Rank Top N' = IF ( NOT ISBLANK ( [Return Rank] ) && [Return Rank] <= [Top N Value], [Return Rank] )
+		formatString: 0
+		displayFolder: Returns
+		lineageTag: b333b192-14d3-5f4f-9fbb-7310c6080654
+
+	/// Category of the returned product.
+	measure 'Returned Category' = IF ( NOT ISBLANK ( [Return Rank] ) && [Return Rank] <= [Top N Value], CONCATENATEX ( VALUES ( Product[Category] ), Product[Category], ", " ) )
+		displayFolder: Returns
+		lineageTag: 0b151f35-2970-5a11-85f0-023f95e4109c
+
+	/// Sub-category of the returned product.
+	measure 'Returned Sub-Category' = IF ( NOT ISBLANK ( [Return Rank] ) && [Return Rank] <= [Top N Value], CONCATENATEX ( VALUES ( Product[Sub-Category] ), Product[Sub-Category], ", " ) )
+		displayFolder: Returns
+		lineageTag: 73e2d364-4717-5fa4-b43d-e9662aed4224
+
+	/// Region where most of the product's returns happened.
+	measure 'Top Return Region' = IF ( NOT ISBLANK ( [Return Rank] ) && [Return Rank] <= [Top N Value], CONCATENATEX ( TOPN ( 1, ADDCOLUMNS ( VALUES ( State[Region] ), "@r", [Returned Sales] ), [@r], DESC ), State[Region], ", " ) )
+		displayFolder: Returns
+		lineageTag: 6a1c0b7d-5d62-5651-8693-83ca8e7d9a51
+
+	/// Chart title that follows the Top N slicer.
+	measure 'Top N Title' = "Top " & [Top N Value] & " most-returned products, " & [Selected Year]
+		displayFolder: Returns
+		lineageTag: 3980a9de-0575-54d6-a58f-2b64605b157a
+
+	/// Sales if each segment's discount is set to the slider value: list price x (1 - new discount), with the optional volume response.
+	measure 'Predicted Sales' =
+			VAR up = SELECTEDVALUE ( 'Volume Response'[Extra Units %], 0 ) / 100
+			RETURN
+			    SUMX (
+			        VALUES ( Customer[Segment] ),
+			        VAR seg = Customer[Segment]
+			        VAR listValue = [List Sales]
+			        VAR sales = [Sales Before Returns]
+			        VAR cost = sales - [Profit]
+			        VAR currentDiscount = DIVIDE ( listValue - sales, listValue )
+			        VAR picked =
+			            SWITCH (
+			                seg,
+			                "Consumer", SELECTEDVALUE ( 'Discount Consumer'[Consumer Discount %] ),
+			                "Corporate", SELECTEDVALUE ( 'Discount Corporate'[Corporate Discount %] ),
+			                "Home Office", SELECTEDVALUE ( 'Discount Home Office'[Home Office Discount %] )
+			            )
+			        VAR newDiscount = IF ( ISBLANK ( picked ), currentDiscount, picked / 100 )
+			        VAR volume = 1 + up * ( newDiscount - currentDiscount ) * 100
+			        RETURN
+			            listValue * ( 1 - newDiscount ) * volume
+			    )
+		formatString: \$#,0
+		displayFolder: What-if
+		lineageTag: ad22a2ad-945f-5d71-a8cc-b30239ab9162
+
+	/// Profit at the new discounts: predicted sales minus cost.
+	measure 'Predicted Profit' =
+			VAR up = SELECTEDVALUE ( 'Volume Response'[Extra Units %], 0 ) / 100
+			RETURN
+			    SUMX (
+			        VALUES ( Customer[Segment] ),
+			        VAR seg = Customer[Segment]
+			        VAR listValue = [List Sales]
+			        VAR sales = [Sales Before Returns]
+			        VAR cost = sales - [Profit]
+			        VAR currentDiscount = DIVIDE ( listValue - sales, listValue )
+			        VAR picked =
+			            SWITCH (
+			                seg,
+			                "Consumer", SELECTEDVALUE ( 'Discount Consumer'[Consumer Discount %] ),
+			                "Corporate", SELECTEDVALUE ( 'Discount Corporate'[Corporate Discount %] ),
+			                "Home Office", SELECTEDVALUE ( 'Discount Home Office'[Home Office Discount %] )
+			            )
+			        VAR newDiscount = IF ( ISBLANK ( picked ), currentDiscount, picked / 100 )
+			        VAR volume = 1 + up * ( newDiscount - currentDiscount ) * 100
+			        RETURN
+			            ( listValue * ( 1 - newDiscount ) - cost ) * volume
+			    )
+		formatString: \$#,0
+		displayFolder: What-if
+		lineageTag: dafa11db-6277-5d65-8abb-ab0cfb8d6c8e
+
+	/// The discount being tested, weighted by list price.
+	measure 'Tested Discount %' =
+			DIVIDE (
+			    VAR up = SELECTEDVALUE ( 'Volume Response'[Extra Units %], 0 ) / 100
+			    RETURN
+			        SUMX (
+			            VALUES ( Customer[Segment] ),
+			            VAR seg = Customer[Segment]
+			            VAR listValue = [List Sales]
+			            VAR sales = [Sales Before Returns]
+			            VAR cost = sales - [Profit]
+			            VAR currentDiscount = DIVIDE ( listValue - sales, listValue )
+			            VAR picked =
+			                SWITCH (
+			                    seg,
+			                    "Consumer", SELECTEDVALUE ( 'Discount Consumer'[Consumer Discount %] ),
+			                    "Corporate", SELECTEDVALUE ( 'Discount Corporate'[Corporate Discount %] ),
+			                    "Home Office", SELECTEDVALUE ( 'Discount Home Office'[Home Office Discount %] )
+			                )
+			            VAR newDiscount = IF ( ISBLANK ( picked ), currentDiscount, picked / 100 )
+			            VAR volume = 1 + up * ( newDiscount - currentDiscount ) * 100
+			            RETURN
+			                listValue * newDiscount
+			        ),
+			    [List Sales]
+			)
+		formatString: 0.0%
+		displayFolder: What-if
+		lineageTag: 8b620c7c-1ec0-5e83-b7d8-bb16f5c64735
+
+	/// Required output of the what-if: predicted profit divided by predicted sales.
+	measure 'Predicted Profit %' = DIVIDE ( [Predicted Profit], [Predicted Sales] )
+		formatString: 0.0%
+		displayFolder: What-if
+		lineageTag: cf7a8086-b208-5cc0-8e73-f4d971995109
+
+	/// Predicted profit % minus current profit %, in percentage points.
+	measure 'Profit % Change' = ( [Predicted Profit %] - [% Margin] ) * 100
+		formatString: +0.0;-0.0;0.0
+		displayFolder: What-if
+		lineageTag: 3bd10e56-b3f1-52f2-8243-39f2b0eb9e6b
+
+	/// Predicted profit minus current profit.
+	measure 'Predicted Profit Change' = [Predicted Profit] - [Profit]
+		formatString: +\$#,0;-\$#,0;\$0
+		displayFolder: What-if
+		lineageTag: 89f637e9-d89b-59b4-ba28-0dfaa8c07e41
+
+	/// Small line under the predicted profit card.
+	measure 'Predicted Profit Text' =
+			VAR d = [Predicted Profit Change]
+			RETURN
+			    IF ( d >= 0, "▲ ", "▼ " ) & FORMAT ( DIVIDE ( ABS ( d ), 1000 ), "\$#,0.0" ) & "K" & " vs current " & FORMAT ( DIVIDE ( [Profit], 1000 ), "\$#,0.0" ) & "K"
+		displayFolder: Card text
+		lineageTag: e7648be7-d40f-59e4-b2c0-4c0e094429a1
+
+	/// Small line under the predicted sales card.
+	measure 'Predicted Sales Text' =
+			VAR d = [Predicted Sales] - [Sales Before Returns]
+			RETURN
+			    IF ( d >= 0, "▲ ", "▼ " ) & FORMAT ( DIVIDE ( ABS ( d ), 1000 ), "\$#,0.0" ) & "K" & " vs current " & FORMAT ( DIVIDE ( [Sales Before Returns], 1000 ), "\$#,0.0" ) & "K"
+		displayFolder: Card text
+		lineageTag: c727404a-803b-5b6c-acfe-c2ebe8b633c8
+
+	/// Small line under the current profit % card.
+	measure 'Current Profit Text' = FORMAT ( DIVIDE ( [Profit], 1000 ), "\$#,0.0" ) & "K" & " profit on " & FORMAT ( DIVIDE ( [Sales Before Returns], 1000 ), "\$#,0.0" ) & "K" & " sales"
+		displayFolder: Card text
+		lineageTag: 636e60aa-6e9d-50ad-ad2b-510221e47a7e
+
+	/// Small line under the tested discount card.
+	measure 'Tested Discount Text' = "Current discount " & FORMAT ( [% Discount Given], "0.0%" )
+		displayFolder: Card text
+		lineageTag: e385ab2a-618e-553f-8343-7b9eed5c8475
+
+	/// Blue for a profit, orange-red for a loss.
+	measure 'Profit Colour' = IF ( [Profit] >= 0, "#2563EB", "#C2410C" )
+		displayFolder: What-if
+		lineageTag: 1599cec1-2aa8-50d8-be23-4a79e6ae4e3c
+
+	/// The top % of customers picked by the user (20 when nothing is picked).
+	measure 'Top Pct' = SELECTEDVALUE ( 'Top Customer %'[Top %], 20 )
+		formatString: 0
+		displayFolder: Pareto
+		lineageTag: f7a2bdcc-c845-5e37-8694-529249027181
+
+	/// How many customers are in the chosen top %.
+	measure 'Top Customers Count' = ROUNDUP ( [Customers] * [Top Pct] / 100, 0 )
+		formatString: #,0
+		displayFolder: Pareto
+		lineageTag: 39ae096f-cb14-5ae6-8dae-fbc8373956e2
+
+	/// Total sales of the customers in the chosen top %.
+	measure 'Top Customers Sales' =
+			VAR p = [Top Pct]
+			VAR n = ROUNDUP ( [Customers] * p / 100, 0 )
+			VAR t = ADDCOLUMNS ( VALUES ( Customer[Customer ID] ), "@s", [Total Sales] )
+			RETURN
+			    SUMX ( TOPN ( n, t, [@s], DESC ), [@s] )
+		formatString: \$#,0
+		displayFolder: Pareto
+		lineageTag: 3fe7cf86-50dc-52f5-a798-0d34b10714cb
+
+	/// Required output of the Pareto view: share of total sales from the chosen top % of customers.
+	measure 'Top Customers Share %' = DIVIDE ( [Top Customers Sales], [Total Sales] )
+		formatString: 0.0%
+		displayFolder: Pareto
+		lineageTag: c94670b4-d825-5a15-9a66-686b35016e9a
+
+	/// Small line: customers in the chosen top %.
+	measure 'Top Customers Count Text' = FORMAT ( [Top Customers Count], "#,0" ) & " of " & FORMAT ( [Customers], "#,0" ) & " customers"
+		displayFolder: Card text
+		lineageTag: 1a1db1b4-33fa-5a43-a954-f7e7a715ee3a
+
+	/// Small line under the top customers sales card.
+	measure 'Top Customers Sales Text' = "of " & FORMAT ( DIVIDE ( [Total Sales], 1000 ), "\$#,0.0" ) & "K" & " total sales"
+		displayFolder: Card text
+		lineageTag: edaa6fa0-f5d8-5b69-b0b4-110a166b3b23
+
+	/// Card title that follows the slider.
+	measure 'Top Share Title' = "Sales from the top " & [Top Pct] & "% of customers"
+		displayFolder: Pareto
+		lineageTag: 5aaade9e-24a4-575b-a0bc-5fd409eda808
+
+	/// Share of sales from the top x% of customers, for each x on the Pareto Axis.
+	measure 'Pareto Curve %' =
+			VAR p = SELECTEDVALUE ( 'Pareto Axis'[Top % of Customers] )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( p ),
+			        DIVIDE (
+			            VAR n = ROUNDUP ( [Customers] * p / 100, 0 )
+			            VAR t = ADDCOLUMNS ( VALUES ( Customer[Customer ID] ), "@s", [Total Sales] )
+			            RETURN
+			                SUMX ( TOPN ( n, t, [@s], DESC ), [@s] ),
+			            [Total Sales]
+			        )
+			    )
+		formatString: 0.0%
+		displayFolder: Pareto
+		lineageTag: ec12998a-6e75-5c29-a499-863075bee67a
+
+	/// The point of the curve at the chosen top %, drawn as a marker.
+	measure 'Pareto Selected Point' = IF ( SELECTEDVALUE ( 'Pareto Axis'[Top % of Customers] ) = [Top Pct], [Pareto Curve %] )
+		formatString: 0.0%
+		displayFolder: Pareto
+		lineageTag: c2e5eb12-575f-5223-ae5d-f09d16686f0d
+
+	/// Smallest number of customers, biggest first, that add up to 80% of sales.
+	measure 'Customers For 80%' =
+			VAR t = ADDCOLUMNS ( VALUES ( Customer[Customer ID] ), "@s", [Total Sales] )
+			VAR total = SUMX ( t, [@s] )
+			VAR withBefore = ADDCOLUMNS ( t, "@before", VAR s = [@s] RETURN SUMX ( FILTER ( t, [@s] > s ), [@s] ) )
+			RETURN
+			    COUNTROWS ( FILTER ( withBefore, [@s] > 0 && [@before] < 0.8 * total ) ) + 0
+		formatString: #,0
+		displayFolder: Pareto
+		lineageTag: 6c29af0b-e84d-5322-8211-89ca01598e09
+
+	/// Small line under the 80% card.
+	measure 'Customers For 80% Text' = FORMAT ( DIVIDE ( [Customers For 80%], [Customers] ), "0.0%" ) & " of customers"
+		displayFolder: Card text
+		lineageTag: e09d6915-effb-5dbd-a661-dac3ea635263
+
+	/// Rank of a customer by total sales in the selected year.
+	measure 'Customer Rank' = IF ( NOT ISBLANK ( [Total Sales] ), RANKX ( ALLSELECTED ( Customer ), [Total Sales],, DESC, SKIP ) )
+		formatString: 0
+		displayFolder: Pareto
+		lineageTag: f204f661-05f5-5657-a897-88db3146ae9d
+
+	/// Top Customers Count for all customers in view, usable on a customer row.
+	measure 'Top Customers Count All' = CALCULATE ( [Top Customers Count], ALLSELECTED ( Customer ) )
+		formatString: #,0
+		displayFolder: Pareto
+		lineageTag: 7fa38253-118c-5281-89a5-5a5d98143ef2
+
+	/// Rank, only for customers inside the chosen top %.
+	measure 'Top Customer Rank' = IF ( [Customer Rank] <= [Top Customers Count All], [Customer Rank] )
+		formatString: 0
+		displayFolder: Pareto
+		lineageTag: 33278799-b185-5260-95c3-3c467c313bca
+
+	/// Sales, only for customers inside the chosen top %.
+	measure 'Top Customer Sales' = IF ( [Customer Rank] <= [Top Customers Count All], [Total Sales] )
+		formatString: \$#,0
+		displayFolder: Pareto
+		lineageTag: 549c36f6-72be-57d6-81d5-9a7b2e34af8d
+
+	/// Share of total sales, only for customers inside the chosen top %.
+	measure 'Top Customer Share' = IF ( [Customer Rank] <= [Top Customers Count All], DIVIDE ( [Total Sales], CALCULATE ( [Total Sales], ALLSELECTED ( Customer ) ) ) )
+		formatString: 0.00%
+		displayFolder: Pareto
+		lineageTag: f554857f-89ad-5809-b7ce-abd3f91e4802
+
+	/// Orders, only for customers inside the chosen top %.
+	measure 'Top Customer Orders' = IF ( [Customer Rank] <= [Top Customers Count All], [Orders] )
+		formatString: #,0
+		displayFolder: Pareto
+		lineageTag: 5e42e8d1-7f8c-52b2-8810-70b106b0e34c
+
+	/// Number of customers.
+	measure 'RFM Customers' = COUNTROWS ( Customer )
+		formatString: #,0
+		displayFolder: RFM
+		lineageTag: 48844518-0de2-5ce7-b4e0-8732439e24fd
+
+	/// Sales after returns, all years.
+	measure 'RFM Sales' = SUM ( Customer[Lifetime Sales] )
+		formatString: \$#,0
+		displayFolder: RFM
+		lineageTag: a586eaeb-3411-5f01-afbf-711a98c32167
+
+	/// Orders, all years.
+	measure 'RFM Orders' = SUM ( Customer[Lifetime Orders] )
+		formatString: #,0
+		displayFolder: RFM
+		lineageTag: 77415561-9c9b-5e46-9b5a-2fef1ffa2b88
+
+	/// Average orders per customer, all years.
+	measure 'RFM Avg Orders' = AVERAGE ( Customer[Lifetime Orders] )
+		formatString: 0.0
+		displayFolder: RFM
+		lineageTag: 2e2adb05-b261-5676-84e4-ab7dd1d663c9
+
+	/// Sales in the last 180 days of the data.
+	measure 'RFM Sales Last 180 Days' = SUM ( Customer[Sales Last 180 Days] )
+		formatString: \$#,0
+		displayFolder: RFM
+		lineageTag: c710076f-0875-5276-9a53-6ecb425d0f41
+
+	/// Share of the customers in view.
+	measure 'RFM % of Customers' = DIVIDE ( [RFM Customers], CALCULATE ( [RFM Customers], ALLSELECTED ( Customer ) ) )
+		formatString: 0.0%
+		displayFolder: RFM
+		lineageTag: b6c56912-c2d5-5281-9d5e-43a3beaddef7
+
+	/// Required: contribution to sales, as a share of the sales in view.
+	measure 'RFM % of Sales' = DIVIDE ( [RFM Sales], CALCULATE ( [RFM Sales], ALLSELECTED ( Customer ) ) )
+		formatString: 0.0%
+		displayFolder: RFM
+		lineageTag: 3fe4a5cd-5020-549f-be67-d346402f5cc4
+
+	/// Share of sales that comes from High value customers.
+	measure 'High Value Share %' = DIVIDE ( CALCULATE ( [RFM Sales], KEEPFILTERS ( Customer[Value Tier] = "High" ) ), [RFM Sales] )
+		formatString: 0.0%
+		displayFolder: RFM
+		lineageTag: 8e21db66-76a8-5707-93be-586456579d6e
+
+	/// Small line under the high value card.
+	measure 'High Value Text' = FORMAT ( CALCULATE ( [RFM Customers], KEEPFILTERS ( Customer[Value Tier] = "High" ) ) + 0, "#,0" ) & " high value customers"
+		displayFolder: Card text
+		lineageTag: 9aba0e40-c3c7-58b6-b922-ee9a5dd5ab84
+
+	/// Big spenders who bought nothing in the last 180 days.
+	measure 'Win Back Customers' = CALCULATE ( [RFM Customers], KEEPFILTERS ( Customer[Action] = "Win back" ) ) + 0
+		formatString: #,0
+		displayFolder: RFM
+		lineageTag: d48935aa-4b7e-5075-ab8f-2f8908f2074e
+
+	/// All-years sales of the win-back customers.
+	measure 'Win Back Sales' = CALCULATE ( [RFM Sales], KEEPFILTERS ( Customer[Action] = "Win back" ) )
+		formatString: \$#,0
+		displayFolder: RFM
+		lineageTag: 0ddebc91-47d7-55cc-89be-72f6b937aab2
+
+	/// Small line under the win-back card.
+	measure 'Win Back Text' = FORMAT ( DIVIDE ( [Win Back Sales], [RFM Sales] ), "0.0%" ) & " of all sales"
+		displayFolder: Card text
+		lineageTag: 078427f4-b318-5cd5-aec6-c085e7cafc18
+
+	/// Small line: the date the scores are measured on.
+	measure 'RFM Customers Text' = "Scored on " & FORMAT ( CALCULATE ( MAX ( Orders[Order Date] ), REMOVEFILTERS () ), "d mmm yyyy" )
+		displayFolder: Card text
+		lineageTag: 5027fd1c-5876-5718-a1a6-9db6ba575a95
+
+	/// Small line under the sales card.
+	measure 'RFM Sales Text' = "All years, after returns"
+		displayFolder: Card text
+		lineageTag: 55e9fb3e-1f84-507e-87ee-8c217755d4a0
+
+	/// Small line: share of customers who bought in the last 180 days.
+	measure 'RFM 180 Text' = FORMAT ( DIVIDE ( CALCULATE ( [RFM Customers], KEEPFILTERS ( Customer[Sales Last 180 Days] > 0 ) ), [RFM Customers] ), "0%" ) & " of customers bought"
+		displayFolder: Card text
+		lineageTag: d5e050df-6ac1-5163-8289-46c32dca74b2
+
+	/// Cell colour of the score heat map: darker means more customers.
+	measure 'Heat Colour' =
+			VAR share = DIVIDE ( [RFM Customers], CALCULATE ( [RFM Customers], ALLSELECTED ( Customer ) ) )
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( share ), "#FFFFFF", share >= 0.08, "#2563EB", share >= 0.05, "#5B84E8", share >= 0.03, "#A9BFF5", "#DCE6FB" )
+		displayFolder: RFM
+		lineageTag: 0361fa79-0f75-59a7-bbb7-c636b3f499fe
+
+	/// Text colour of the score heat map.
+	measure 'Heat Font' =
+			VAR share = DIVIDE ( [RFM Customers], CALCULATE ( [RFM Customers], ALLSELECTED ( Customer ) ) )
+			RETURN
+			    IF ( share >= 0.05, "#FFFFFF", "#172033" )
+		displayFolder: RFM
+		lineageTag: 73c441be-90ea-5cca-a6ed-016d1b98a7fe
+
+	/// Customers whose first ever order is in the selected year.
+	measure 'New Customers' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( DISTINCTCOUNT ( Orders[Customer ID] ), Customer[First Order Year] = y, 'Date'[Year] = y ) + 0
+		formatString: #,0
+		displayFolder: New customers
+		lineageTag: 7ea695ef-454a-573e-a104-4ae1342c1aca
+
+	/// Total sales from customers who are new in the selected year.
+	measure 'New Customer Sales' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( [Total Sales], KEEPFILTERS ( Customer[First Order Year] = y ) )
+		formatString: \$#,0
+		displayFolder: New customers
+		lineageTag: 809d4bd0-4f87-5204-81a4-65f820134222
+
+	/// Units bought by new customers.
+	measure 'New Customer Quantity' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( [Quantity], KEEPFILTERS ( Customer[First Order Year] = y ) )
+		formatString: #,0
+		displayFolder: New customers
+		lineageTag: b23af7a7-2b12-55d4-b4b7-7293f84190aa
+
+	/// Discount amount given to new customers.
+	measure 'New Customer Discount Amount' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( [Discount Amount], KEEPFILTERS ( Customer[First Order Year] = y ) )
+		formatString: \$#,0
+		displayFolder: New customers
+		lineageTag: 59a73ea2-c7b6-5313-9cf3-b370f52a1534
+
+	/// Orders placed by new customers.
+	measure 'New Customer Orders' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( [Orders], KEEPFILTERS ( Customer[First Order Year] = y ) )
+		formatString: #,0
+		displayFolder: New customers
+		lineageTag: 73178231-6a32-58cb-a26e-5ee996236e8a
+
+	/// Small line under the new customers card.
+	measure 'New Customers Text' = "of " & FORMAT ( [Customers], "#,0" ) & " customers in " & [Selected Year]
+		displayFolder: Card text
+		lineageTag: ad7fda0e-b69a-583c-afc4-a3888e0ef438
+
+	/// Small line under the new customer sales card.
+	measure 'New Customer Sales Text' = FORMAT ( DIVIDE ( [New Customer Sales], [Total Sales] ), "0.0%" ) & " of total sales"
+		displayFolder: Card text
+		lineageTag: a8f9e432-d027-5c32-b185-63523e05be1f
+
+	/// Small line under the quantity card.
+	measure 'New Customer Quantity Text' = "in " & FORMAT ( [New Customer Orders], "#,0" ) & " orders"
+		displayFolder: Card text
+		lineageTag: 9ec710d1-fa49-54ad-a671-3ca9d7bee38d
+
+	/// Small line under the discount amount card.
+	measure 'New Customer Discount Text' =
+			VAR y = [Selected Year]
+			RETURN
+			    FORMAT ( DIVIDE ( [New Customer Discount Amount], CALCULATE ( [List Sales], KEEPFILTERS ( Customer[First Order Year] = y ) ) ), "0.0%" ) & " of list price"
+		displayFolder: Card text
+		lineageTag: 0b778183-704c-5641-8b46-43f0217ed45f
+
+	/// Share of last year's customers who bought again in the selected year.
+	measure 'Retention %' =
+			VAR y = [Selected Year]
+			VAR previousCustomers = CALCULATETABLE ( VALUES ( Orders[Customer ID] ), 'Date'[Year] = y - 1 )
+			VAR currentCustomers = CALCULATETABLE ( VALUES ( Orders[Customer ID] ), 'Date'[Year] = y )
+			RETURN
+			    DIVIDE ( COUNTROWS ( INTERSECT ( previousCustomers, currentCustomers ) ), COUNTROWS ( previousCustomers ) )
+		formatString: 0.0%
+		displayFolder: New customers
+		lineageTag: 39d42668-6a73-5733-bcd7-6c92f76c78cd
+
+	/// Small line under the retention card.
+	measure 'Retention Text' = "of " & FORMAT ( [Customers LY], "#,0" ) & " in " & ( [Selected Year] - 1 )
+		displayFolder: Card text
+		lineageTag: 68b804ce-12f3-5f92-a809-c0f0cda1f6fa
+
+	/// Average total sales per customer.
+	measure 'Sales Per Customer' = DIVIDE ( [Total Sales], [Customers] )
+		formatString: \$#,0
+		displayFolder: New customers
+		lineageTag: 1d247e9d-e493-50e5-a2ad-0e348dc49b21
+
+	/// Small line: average sales of a new customer.
+	measure 'Sales Per Customer Text' = "New customers: " & FORMAT ( DIVIDE ( [New Customer Sales], [New Customers] ), "\$#,0" )
+		displayFolder: Card text
+		lineageTag: f9ced57d-6fbb-5304-bc49-331fff2b7fa7
+
+	/// Rank of a sales person by total sales. With Segment on the rows it ranks inside each segment.
+	measure 'Sales Person Rank' = IF ( NOT ISBLANK ( [Total Sales] ), RANKX ( ALLSELECTED ( 'Sales Person'[Sales Person] ), [Total Sales],, DESC, SKIP ) )
+		formatString: 0
+		displayFolder: Sales team
+		lineageTag: 4feb8f40-c032-56a5-949b-f03dff2035fa
+
+	/// Rank, only for the top 5 sales people.
+	measure 'Top 5 Rank' = IF ( [Sales Person Rank] <= 5, [Sales Person Rank] )
+		formatString: 0
+		displayFolder: Sales team
+		lineageTag: d72bbdb8-0d4c-599e-a173-8b2aecb0c445
+
+	/// Total sales, only for the top 5 sales people.
+	measure 'Top 5 Sales' = IF ( [Sales Person Rank] <= 5, [Total Sales] )
+		formatString: \$#,0
+		displayFolder: Sales team
+		lineageTag: 8b53ba8a-8732-5ef5-8421-337d21f5a2d0
+
+	/// % average discount, only for the top 5 sales people.
+	measure 'Top 5 Avg Discount' = IF ( [Sales Person Rank] <= 5, [% Avg Discount] )
+		formatString: 0.0%
+		displayFolder: Sales team
+		lineageTag: 5f0cf3e2-c6e8-5b69-ace9-cbe97dac41d3
+
+	/// Order lines, only for the top 5 sales people.
+	measure 'Top 5 Order Lines' = IF ( [Sales Person Rank] <= 5, [Order Lines] )
+		formatString: #,0
+		displayFolder: Sales team
+		lineageTag: 43160b47-3466-57aa-a365-4d2a0fee5ee4
+
+	/// % margin, only for the top 5 sales people.
+	measure 'Top 5 Margin' = IF ( [Sales Person Rank] <= 5, [% Margin] )
+		formatString: 0.0%
+		displayFolder: Sales team
+		lineageTag: 56117eb4-8c1c-5b91-b187-121a6863e1cf
+
+	/// Insight 1: growth and target.
+	measure 'Insight 1' =
+			VAR y = [Selected Year]
+			VAR g = [Total Sales YoY %]
+			VAR gap = [Target Gap]
+			RETURN
+			    "Total sales (after returns) were " & FORMAT ( DIVIDE ( [Total Sales], 1000 ), "\$#,0.0" ) & "K" & " in " & y
+			        & IF ( ISBLANK ( g ), "", ", " & IF ( g >= 0, "up ", "down " ) & FORMAT ( ABS ( g ), "0.0%" ) & " on " & ( y - 1 ) )
+			        & IF (
+			            ISBLANK ( [Target] ),
+			            ".",
+			            ". That is " & FORMAT ( [% Target Achieved], "0.0%" ) & " of the " & FORMAT ( DIVIDE ( [Target], 1000 ), "\$#,0.0" ) & "K" & " target: "
+			                & FORMAT ( DIVIDE ( ABS ( gap ), 1000 ), "\$#,0.0" ) & "K" & IF ( gap >= 0, " above it.", " short of it." )
+			        )
+		displayFolder: Insights
+		lineageTag: ff278242-2d64-51ee-98b2-577c86ef6b79
+
+	/// Insight 2: returns.
+	measure 'Insight 2' =
+			VAR y = [Selected Year]
+			VAR worst = TOPN ( 1, ADDCOLUMNS ( VALUES ( State[Region] ), "@r", [Return Rate %] ), [@r], DESC )
+			VAR ly = [Return Rate LY]
+			RETURN
+			    "Returns removed " & FORMAT ( DIVIDE ( [Returned Sales], 1000 ), "\$#,0.0" ) & "K" & ", or " & FORMAT ( [Return Rate %], "0.0%" ) & " of sales"
+			        & IF ( ISBLANK ( ly ), "", " (" & FORMAT ( ly, "0.0%" ) & " in " & ( y - 1 ) & ")" )
+			        & ". " & CONCATENATEX ( worst, State[Region], ", " ) & " has the highest return rate at " & FORMAT ( MAXX ( worst, [@r] ), "0.0%" )
+			        & "."
+			        & IF ( NOT ISBLANK ( [Target] ), " Before returns, sales were " & FORMAT ( DIVIDE ( [Sales Before Returns], [Target] ), "0.0%" ) & " of target." )
+		displayFolder: Insights
+		lineageTag: affd1242-03e8-57b2-9af3-288ab47befc0
+
+	/// Insight 3: targets by state.
+	measure 'Insight 3' =
+			VAR states = ADDCOLUMNS ( FILTER ( VALUES ( State[State] ), NOT ISBLANK ( [Target] ) ), "@gap", [Target Gap], "@ach", [% Target Achieved] )
+			VAR worst = TOPN ( 1, states, [@gap], ASC )
+			RETURN
+			    IF (
+			        ISBLANK ( [Target] ),
+			        "Targets are set per state and month, so this point is not shown while a segment or category is selected.",
+			        [States Achieved Text] & " states and " & [Regions Achieved Text] & " regions reached their target. The biggest gap is "
+			        & CONCATENATEX ( worst, State[State], ", " ) & ": " & FORMAT ( DIVIDE ( ABS ( MINX ( worst, [@gap] ) ), 1000 ), "\$#,0.0" ) & "K" & " short, at "
+			        & FORMAT ( MINX ( worst, [@ach] ), "0.0%" ) & " of target."
+			    )
+		displayFolder: Insights
+		lineageTag: 3aae3833-a3f4-51b9-8e9f-399c0e2f2e4c
+
+	/// Insight 4: discounts.
+	measure 'Insight 4' =
+			VAR deepProfit = CALCULATE ( [Profit], KEEPFILTERS ( Orders[Discount Band] = "Above 20%" ) )
+			VAR deepSales = CALCULATE ( [Sales Before Returns], KEEPFILTERS ( Orders[Discount Band] = "Above 20%" ) )
+			VAR otherProfit = [Profit] - deepProfit
+			RETURN
+			    "Order lines discounted above 20% " & IF ( deepProfit < 0, "lost ", "earned " ) & FORMAT ( DIVIDE ( ABS ( deepProfit ), 1000 ), "\$#,0.0" ) & "K" & " on " & FORMAT ( DIVIDE ( deepSales, 1000 ), "\$#,0.0" ) & "K"
+			        & " of sales. All other lines earned " & FORMAT ( DIVIDE ( otherProfit, 1000 ), "\$#,0.0" ) & "K" & ". Overall margin is " & FORMAT ( [% Margin], "0.0%" ) & "."
+		displayFolder: Insights
+		lineageTag: c01987db-e673-55ff-bd35-44d6942ee8a6
+
+	/// Insight 5: customers.
+	measure 'Insight 5' =
+			VAR y = [Selected Year]
+			VAR top20 = DIVIDE ( VAR n = ROUNDUP ( [Customers] * 20 / 100, 0 )
+			    VAR t = ADDCOLUMNS ( VALUES ( Customer[Customer ID] ), "@s", [Total Sales] )
+			    RETURN
+			        SUMX ( TOPN ( n, t, [@s], DESC ), [@s] ), [Total Sales] )
+			VAR segments = ADDCOLUMNS ( VALUES ( Customer[Segment] ), "@g", [Total Sales YoY %] )
+			VAR best = TOPN ( 1, FILTER ( segments, NOT ISBLANK ( [@g] ) ), [@g], DESC )
+			RETURN
+			    "The top 20% of customers bring " & FORMAT ( top20, "0.0%" ) & " of sales. Only " & FORMAT ( [New Customers], "#,0" ) & " of "
+			        & FORMAT ( [Customers], "#,0" ) & " customers were new in " & y & ", so growth came from existing customers."
+			        & IF ( COUNTROWS ( best ) > 0, " Fastest-growing segment: " & CONCATENATEX ( best, Customer[Segment], ", " ) & " (" & FORMAT ( MAXX ( best, [@g] ), "+0.0%;-0.0%" ) & ")." )
+		displayFolder: Insights
+		lineageTag: bb423e06-a9cf-5305-b5c5-6b3f2bc0d881
+
+	/// The sentence for each row of the Insight table.
+	measure 'Insight Text' = SWITCH ( SELECTEDVALUE ( Insight[No] ), 1, [Insight 1], 2, [Insight 2], 3, [Insight 3], 4, [Insight 4], 5, [Insight 5] )
+		displayFolder: Insights
+		lineageTag: 8af4cfd0-d77d-560b-b09d-23c77053a658
+
+	/// Green when Total Sales grew on last year, orange-red when it fell.
+	measure 'Colour Total Sales' =
+			VAR g = [Total Sales YoY %]
+			RETURN
+			    IF ( ISBLANK ( g ), "#172033", IF ( g >= 0, "#16834A", "#C2410C" ) )
+		displayFolder: Colours
+		lineageTag: 42c57912-a88b-5d38-af78-a94985df1a9c
+
+	/// Green when Profit grew on last year, orange-red when it fell.
+	measure 'Colour Profit' =
+			VAR g = [Profit YoY %]
+			RETURN
+			    IF ( ISBLANK ( g ), "#172033", IF ( g >= 0, "#16834A", "#C2410C" ) )
+		displayFolder: Colours
+		lineageTag: 10eb3bd2-c7a9-596b-8614-05ed99d6e112
+
+	/// Green when Orders grew on last year, orange-red when it fell.
+	measure 'Colour Orders' =
+			VAR g = [Orders YoY %]
+			RETURN
+			    IF ( ISBLANK ( g ), "#172033", IF ( g >= 0, "#16834A", "#C2410C" ) )
+		displayFolder: Colours
+		lineageTag: ca2dc71c-c42f-5939-9064-ecfc5683ab6b
+
+	/// Green when Customers grew on last year, orange-red when it fell.
+	measure 'Colour Customers' =
+			VAR g = [Customers YoY %]
+			RETURN
+			    IF ( ISBLANK ( g ), "#172033", IF ( g >= 0, "#16834A", "#C2410C" ) )
+		displayFolder: Colours
+		lineageTag: 8aba876b-63e3-5db1-bb78-b1fa98cd4a2c
+
+	/// Green when % margin is at or above last year.
+	measure 'Colour Margin' =
+			VAR ly = [% Margin LY]
+			RETURN
+			    IF ( ISBLANK ( ly ), "#172033", IF ( [% Margin] >= ly, "#16834A", "#C2410C" ) )
+		displayFolder: Colours
+		lineageTag: dbd0b176-08cd-5f7a-a456-db4dc2fb3a8b
+
+	/// Green when the return rate is at or below last year (lower is better).
+	measure 'Colour Return Rate' =
+			VAR ly = [Return Rate LY]
+			RETURN
+			    IF ( ISBLANK ( ly ), "#172033", IF ( [Return Rate %] <= ly, "#16834A", "#C2410C" ) )
+		displayFolder: Colours
+		lineageTag: 7fe93177-2536-5d5d-817c-9ca28783ee63
+
+	/// Green when returned sales are at or below last year.
+	measure 'Colour Returned Sales' =
+			VAR ly = [Returned Sales LY]
+			RETURN
+			    IF ( ISBLANK ( ly ), "#172033", IF ( [Returned Sales] <= ly, "#16834A", "#C2410C" ) )
+		displayFolder: Colours
+		lineageTag: 74b349a0-3b4d-5e5c-9e1e-47d80cd5dab9
+
+	/// Green when the tested discounts give a higher profit % than today.
+	measure 'Colour What-if' = IF ( [Predicted Profit %] >= [% Margin], "#16834A", "#C2410C" )
+		displayFolder: Colours
+		lineageTag: 583fdc47-be08-5212-b8f9-2c18d09a6f23
+
+	/// Orange-red for a loss.
+	measure 'Colour Loss' = IF ( [Profit] < 0, "#C2410C", "#172033" )
+		displayFolder: Colours
+		lineageTag: 19574fbc-8fab-5f13-b376-87dae5252527
+
+	/// Orange-red when the average discount is above 20% (such lines lose money).
+	measure 'Colour Discount' = IF ( [% Avg Discount] > 0.2, "#C2410C", "#172033" )
+		displayFolder: Colours
+		lineageTag: 843011b5-ab87-56c6-8424-c90e6b7229eb
+
+	/// Orange-red when a group returns more than the company as a whole.
+	measure 'Colour Return Rate Bar' =
+			VAR overall = CALCULATE ( [Return Rate %], REMOVEFILTERS ( State ), REMOVEFILTERS ( Product ), REMOVEFILTERS ( Customer ) )
+			RETURN
+			    IF ( [Return Rate %] > overall, "#C2410C", "#64748B" )
+		displayFolder: Colours
+		lineageTag: a493b95e-d329-5426-86b1-c8ac44c1695d
+
+	/// Blue for the selected year, grey for other years.
+	measure 'Colour Year' = IF ( SELECTEDVALUE ( 'Trend Year'[Year] ) = [Selected Year], "#2563EB", "#94A3B8" )
+		displayFolder: Colours
+		lineageTag: a4f40a0a-651a-50f7-a226-d9d6296d3e29
+
+	/// Orange-red for the selected year, grey for other years.
+	measure 'Colour Year Return' = IF ( SELECTEDVALUE ( 'Trend Year'[Year] ) = [Selected Year], "#C2410C", "#94A3B8" )
+		displayFolder: Colours
+		lineageTag: d7c93971-63c8-5fd3-8f24-21542d96f3ff
+
+	/// Blue for customers who are new in the selected year.
+	measure 'Colour Cohort' = IF ( SELECTEDVALUE ( Customer[First Order Year] ) = [Selected Year], "#2563EB", "#94A3B8" )
+		displayFolder: Colours
+		lineageTag: 6246dd66-59cc-50da-8a10-a9206ba8a48c
+
+	/// Brand blue as a field value.
+	measure 'Colour Blue' = "#2563EB"
+		displayFolder: Colours
+		lineageTag: 43fe41eb-aaa7-5e3c-8d1a-a7ea78ba95c3
+
+	/// Colour of a value tier.
+	measure 'Colour Tier' = SWITCH ( SELECTEDVALUE ( Customer[Value Tier] ), "High", "#2563EB", "Medium", "#475569", "#94A3B8" )
+		displayFolder: Colours
+		lineageTag: 5c07c00e-4041-5d15-bf0f-c1cb25d020cc
+
+	/// Colour of a marketing action.
+	measure 'Colour Action' = SWITCH ( SELECTEDVALUE ( Customer[Action] ), "Win back", "#C2410C", "Reward and keep", "#16834A", "Grow", "#2563EB", "#172033" )
+		displayFolder: Colours
+		lineageTag: 27af9f04-e37b-59f4-9cb5-a767b44264ac
+
+	/// Orange-red for customers who bought nothing in the last 180 days.
+	measure 'Colour Recent' = IF ( SUM ( Customer[Sales Last 180 Days] ) = 0, "#C2410C", "#172033" )
+		displayFolder: Colours
+		lineageTag: d0d97783-c046-572b-afac-8c244c95dc52
+
+	/// Share of total sales added by each extra 1% of customers (the bars under the Pareto curve).
+	measure 'Pareto Slice %' =
+			VAR p = SELECTEDVALUE ( 'Pareto Axis'[Top % of Customers] )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( p ),
+			        [Pareto Curve %] - IF ( p > 1, CALCULATE ( [Pareto Curve %], TREATAS ( { p - 1 }, 'Pareto Axis'[Top % of Customers] ) ), 0 )
+			    )
+		formatString: 0.0%
+		displayFolder: Pareto
+		lineageTag: 33408543-aae4-5a92-94b6-8e36bfed527f
+
+	/// What to do next, for each row of the Insight table.
+	measure 'Insight Action' =
+			SWITCH (
+			    SELECTEDVALUE ( Insight[No] ),
+			    1, IF ( [% Target Achieved] >= 1, "Target reached: protect it by keeping the strong months and regions on track.", "Close the gap: start with the bottom 5 states and the months that missed target (Targets page)." ),
+			    2, "Cut returns where they are highest: review the most-returned products and the worst region (Returns page).",
+			    3, "Visit the states furthest below target together with their region heads (Targets page, bottom 5 states).",
+			    4, IF ( CALCULATE ( [Profit], KEEPFILTERS ( Orders[Discount Band] = "Above 20%" ) ) < 0, "Cap discounts at 20%: lines above it lose money. Test the cap on the What-if page.", "Discounts above 20% still earn a profit. Test the limits on the What-if page." ),
+			    5, "Win back the big spenders who went quiet and reward the High value tier (RFM page)."
+			)
+		displayFolder: Insights
+		lineageTag: e84c960e-daed-5f78-b529-f52bc15fa835
+
+	/// Average sales per customer in the year before.
+	measure 'Sales Per Customer LY' =
+			VAR y = [Selected Year]
+			RETURN
+			    CALCULATE ( [Sales Per Customer], 'Date'[Year] = y - 1 )
+		formatString: \$#,0
+		displayFolder: Last year
+		lineageTag: 9f6432f1-c6e3-5637-94b1-4cf43eb606b2
+
+	/// Growth of average sales per customer on the year before.
+	measure 'Sales Per Customer YoY %' =
+			VAR ly = [Sales Per Customer LY]
+			RETURN
+			    IF ( ly <> 0, DIVIDE ( [Sales Per Customer] - ly, ly ) )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Last year
+		lineageTag: 2eca5e7a-16ea-594f-a9d2-f1063aadd150
+
+	/// Small line under the average sales per customer card.
+	measure 'Sales Per Customer YoY Text' =
+			VAR g = [Sales Per Customer YoY %]
+			RETURN
+			    IF ( ISBLANK ( g ), "No data for " & ( [Selected Year] - 1 ), IF ( g >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( g ), "0.0%" ) & " vs " & ( [Selected Year] - 1 ) )
+		displayFolder: Card text
+		lineageTag: a3553567-cb2f-511e-ae16-c3a4ba82c73a
+
+	/// Green when average sales per customer grew on last year, orange-red when it fell.
+	measure 'Colour Sales Per Customer' =
+			VAR g = [Sales Per Customer YoY %]
+			RETURN
+			    IF ( ISBLANK ( g ), "#172033", IF ( g >= 0, "#16834A", "#C2410C" ) )
+		displayFolder: Colours
+		lineageTag: a51ba45a-c815-5dbb-80c1-1186e50389ad
+
+	/// Fixed small line under a card.
+	measure 'Note Picked Discounts' = "At the discounts you picked"
+		displayFolder: Card text
+		lineageTag: a3600852-1047-5593-80b7-0d5194ae5aaa
+
+	/// Fixed small line under a card.
+	measure 'Note Predicted Minus Current' = "Predicted minus current"
+		displayFolder: Card text
+		lineageTag: 7ce331f0-3346-5884-a70e-61da4f4eb080
+
+	/// Green when the tested discounts keep sales at or above today, orange-red when they lower sales.
+	measure 'Colour Predicted Sales' = IF ( [Predicted Sales] >= [Sales Before Returns], "#16834A", "#C2410C" )
+		displayFolder: Colours
+		lineageTag: 831eaba5-4330-5895-9726-89e5e12cded3
+
+	/// Fixed small line under a card.
+	measure 'Note Regions that reached the target' = "Regions that reached the target"
+		displayFolder: Card text
+		lineageTag: 88b51529-fe1d-5fee-92c5-d6acc9195070
+
+	/// Fixed small line under a card.
+	measure 'Note Profit booked, then lost' = "Profit booked, then lost"
+		displayFolder: Card text
+		lineageTag: fbd31b45-81fa-5ada-9e97-211518f6d91a
+
+	/// Fixed small line under a card.
+	measure 'Note Big spenders, quiet 180 days' = "Big spenders, quiet 180 days"
+		displayFolder: Card text
+		lineageTag: e8f62b29-6b35-5c41-a950-20710448e1d6
+
+	column Dummy
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 677d092c-ffc0-51bb-bb53-5903ed8b776b
+		summarizeBy: none
+		sourceColumn: [Dummy]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _Measures = calculated
+		mode: import
+		source = ROW("Dummy", 0)
+

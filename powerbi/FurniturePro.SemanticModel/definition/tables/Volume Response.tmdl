@@ -1,0 +1,25 @@
+/// What-if input: % more units sold for every 1 point of extra discount (and fewer units for every point removed).
+table 'Volume Response'
+	lineageTag: 3c7053b5-cebd-5820-9e0c-5c223fa1e0e2
+
+	/// What-if input: % more units sold for every 1 point of extra discount (and fewer units for every point removed).
+	column 'Extra Units %'
+		dataType: double
+		formatString: 0.0
+		lineageTag: 22f3db5b-59e7-59b8-a7de-a77a0a8c6271
+		summarizeBy: none
+		sourceColumn: Extra Units %
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Volume Response' = m
+		mode: import
+		source =
+				let
+				    Values = List.Numbers(0, 11, 0.5),
+				    Result = Table.FromList(Values, Splitter.SplitByNothing(), type table [#"Extra Units %" = number])
+				in
+				    Result
+
+	annotation PBI_ResultType = Table
+

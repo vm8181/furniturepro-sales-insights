@@ -1,0 +1,64 @@
+/// Full path of the Excel workbook. Change it in Power BI Desktop: Transform data > Edit parameters.
+expression SourceFile = "C:\Projects\furniturepro-sales-insights\data\FurniturePro_Data.xlsx" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 7a028d35-985e-5629-bc64-9a0b5f1adf8b
+
+	annotation PBI_ResultType = Text
+
+/// The Excel workbook, opened once and reused by every query.
+expression Workbook =
+		let
+		    Source = Excel.Workbook(File.Contents(SourceFile), null, true)
+		in
+		    Source
+	lineageTag: 3247eed3-bf42-58ac-8d73-d81b3aebc8ab
+
+	annotation PBI_ResultType = Table
+
+/// Cleaned order lines with every added column. The Orders, Customer, State, Date and Top N tables all start from this.
+expression OrdersBase =
+		let
+		    Sheet = Workbook{[Item = "Orders", Kind = "Sheet"]}[Data],
+		    Headers = Table.PromoteHeaders(Sheet, [PromoteAllScalars = true]),
+		    // The sheet's Year, Country and Postal Code are not needed: the year comes from Order Date
+		    Kept = Table.SelectColumns(Headers, {"Row ID", "Order ID", "Order Date", "Ship Mode", "Customer ID", "Segment", "City", "State", "Region", "Product ID", "Sales Amount", "Quantity", "Discount", "Profit", "SalesPerson"}),
+		    Typed = Table.TransformColumnTypes(Kept, {{"Row ID", Int64.Type}, {"Order ID", type text}, {"Order Date", type date}, {"Ship Mode", type text}, {"Customer ID", type text}, {"Segment", type text}, {"City", type text}, {"State", type text}, {"Region", type text}, {"Product ID", type text}, {"Sales Amount", type number}, {"Quantity", Int64.Type}, {"Discount", type number}, {"Profit", type number}, {"SalesPerson", type text}}, "en-US"),
+		    Trimmed = Table.TransformColumns(Typed, {{"Order ID", Text.Trim, type text}, {"Ship Mode", Text.Trim, type text}, {"Customer ID", Text.Trim, type text}, {"Segment", Text.Trim, type text}, {"City", Text.Trim, type text}, {"State", Text.Trim, type text}, {"Region", Text.Trim, type text}, {"Product ID", Text.Trim, type text}, {"SalesPerson", Text.Trim, type text}}),
+		    Valid = Table.SelectRows(Trimmed, each [Order ID] <> null and [Order Date] <> null and [Sales Amount] <> null),
+		    Renamed = Table.RenameColumns(Valid, {{"SalesPerson", "Sales Person ID"}}),
+		    // Returns are listed per order, so a returned order marks all of its lines as returned
+		    ReturnsSheet = Table.PromoteHeaders(Workbook{[Item = "Returns", Kind = "Sheet"]}[Data], [PromoteAllScalars = true]),
+		    ReturnedOnly = Table.SelectRows(ReturnsSheet, each [Order ID] <> null and Text.Lower(Text.Trim(Text.From([Returned]))) = "yes"),
+		    ReturnedOrders = Table.Distinct(Table.TransformColumns(Table.SelectColumns(ReturnedOnly, {"Order ID"}), {{"Order ID", each Text.Trim(Text.From(_)), type text}})),
+		    Merged = Table.NestedJoin(Renamed, {"Order ID"}, ReturnedOrders, {"Order ID"}, "ReturnMatch", JoinKind.LeftOuter),
+		    AddReturned = Table.AddColumn(Merged, "Returned", each if Table.IsEmpty([ReturnMatch]) then "No" else "Yes", type text),
+		    RemovedMatch = Table.RemoveColumns(AddReturned, {"ReturnMatch"}),
+		    AddReturnedAmount = Table.AddColumn(RemovedMatch, "Returned Amount", each if [Returned] = "Yes" then [Sales Amount] else 0, type number),
+		    AddNetSales = Table.AddColumn(AddReturnedAmount, "Net Sales", each [Sales Amount] - [Returned Amount], type number),
+		    // List Price is the value before discount: Sales Amount = List Price x (1 - Discount)
+		    AddListPrice = Table.AddColumn(AddNetSales, "List Price", each if [Discount] <> null and [Discount] < 1 then [Sales Amount] / (1 - [Discount]) else [Sales Amount], type number),
+		    AddDiscountAmount = Table.AddColumn(AddListPrice, "Discount Amount", each [List Price] - [Sales Amount], type number),
+		    AddCost = Table.AddColumn(AddDiscountAmount, "Cost", each [Sales Amount] - [Profit], type number),
+		    AddBand = Table.AddColumn(AddCost, "Discount Band", each if [Discount] = null or [Discount] = 0 then "No discount" else if [Discount] <= 0.2 then "1% to 20%" else "Above 20%", type text),
+		    AddBandOrder = Table.AddColumn(AddBand, "Discount Band Order", each if [Discount Band] = "No discount" then 1 else if [Discount Band] = "1% to 20%" then 2 else 3, Int64.Type)
+		in
+		    AddBandOrder
+	lineageTag: e5e7b190-1b5d-50d3-a108-8ea5a6d5f72b
+
+	annotation PBI_ResultType = Table
+
+/// Sales targets with a month date built from Year and Month.
+expression TargetBase =
+		let
+		    Sheet = Workbook{[Item = "Sales Target", Kind = "Sheet"]}[Data],
+		    Headers = Table.PromoteHeaders(Sheet, [PromoteAllScalars = true]),
+		    Typed = Table.TransformColumnTypes(Headers, {{"State", type text}, {"Year", Int64.Type}, {"Month", Int64.Type}, {"Target", type number}}, "en-US"),
+		    Trimmed = Table.TransformColumns(Typed, {{"State", Text.Trim, type text}}),
+		    Valid = Table.SelectRows(Trimmed, each [State] <> null and [Year] <> null and [Month] <> null),
+		    AddMonthStart = Table.AddColumn(Valid, "Month Start", each #date([Year], [Month], 1), type date),
+		    Result = Table.SelectColumns(AddMonthStart, {"State", "Month Start", "Target"})
+		in
+		    Result
+	lineageTag: 98ccec7b-b640-50e7-8a01-1c0d24e7e4d0
+
+	annotation PBI_ResultType = Table
+

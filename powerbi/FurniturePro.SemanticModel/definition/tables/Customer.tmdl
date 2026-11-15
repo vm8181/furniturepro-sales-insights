@@ -1,0 +1,252 @@
+/// One row per customer, with the RFM scores. Recency follows the brief: sales in the 180 days before the latest order date in the data.
+table Customer
+	lineageTag: a1d73408-937c-5a25-9a2f-1d2ed60f7782
+
+	/// Customer code.
+	column 'Customer ID'
+		dataType: string
+		isHidden
+		isKey
+		lineageTag: a226e8a4-7a35-54b3-a3c9-90315a986695
+		summarizeBy: none
+		sourceColumn: Customer ID
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Customer name.
+	column 'Customer Name'
+		dataType: string
+		lineageTag: f671e7ec-78c9-56d9-ad77-6159fca020d3
+		summarizeBy: none
+		sourceColumn: Customer Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Consumer, Corporate or Home Office.
+	column Segment
+		dataType: string
+		lineageTag: d91a1747-650d-52e3-8096-d4e8c34a4cee
+		summarizeBy: none
+		sourceColumn: Segment
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Date of the customer's first order.
+	column 'First Order Date'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: 81e59986-eed6-5265-89f1-36919c70f2fc
+		summarizeBy: none
+		sourceColumn: First Order Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Year of the first order. A customer is new in that year.
+	column 'First Order Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: 19e13598-b2ad-51d6-af39-1215c8d8da3f
+		summarizeBy: none
+		sourceColumn: First Order Year
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Date of the customer's latest order.
+	column 'Last Order Date'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: c7c781e9-a7b3-5350-8427-2a22338cff47
+		summarizeBy: none
+		sourceColumn: Last Order Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Frequency: number of orders, all years.
+	column 'Lifetime Orders'
+		dataType: int64
+		formatString: #,0
+		lineageTag: 4f49608b-fd05-5629-a6c2-dfd1005c7195
+		summarizeBy: none
+		sourceColumn: Lifetime Orders
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Monetary: sales after returns, all years.
+	column 'Lifetime Sales'
+		dataType: double
+		formatString: \$#,0
+		lineageTag: cf1a27ab-0255-5fd6-a194-5f8a9998142f
+		summarizeBy: none
+		sourceColumn: Lifetime Sales
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Recency: sales after returns in the last 180 days of the data.
+	column 'Sales Last 180 Days'
+		dataType: double
+		formatString: \$#,0
+		lineageTag: b713ba59-0dfc-5b2e-8805-3951dc9d04fd
+		summarizeBy: none
+		sourceColumn: Sales Last 180 Days
+
+		annotation SummarizationSetBy = Automatic
+
+	/// 1 to 5. Fifths of customers by Sales Last 180 Days; equal values get the same score.
+	column 'R Score'
+		dataType: int64
+		formatString: 0
+		lineageTag: 62129110-8522-5a53-8f8b-72d76eb20479
+		summarizeBy: none
+		sourceColumn: R Score
+
+		annotation SummarizationSetBy = Automatic
+
+	/// 1 to 5. Fifths of customers by Orders.
+	column 'F Score'
+		dataType: int64
+		formatString: 0
+		lineageTag: 07a79d54-089d-5236-b861-3f4ccdab4b80
+		summarizeBy: none
+		sourceColumn: F Score
+
+		annotation SummarizationSetBy = Automatic
+
+	/// 1 to 5. Fifths of customers by Total Sales.
+	column 'M Score'
+		dataType: int64
+		formatString: 0
+		lineageTag: 23c41100-be01-5b65-a674-2ea98faea112
+		summarizeBy: none
+		sourceColumn: M Score
+
+		annotation SummarizationSetBy = Automatic
+
+	/// R + F + M, from 3 to 15.
+	column 'RFM Score'
+		dataType: int64
+		formatString: 0
+		lineageTag: 6e3ab528-35a4-5b1f-ae17-74c8da2db056
+		summarizeBy: none
+		sourceColumn: RFM Score
+
+		annotation SummarizationSetBy = Automatic
+
+	/// High (12 to 15), Medium (8 to 11) or Low (3 to 7).
+	column 'Value Tier'
+		dataType: string
+		lineageTag: a835e0bc-4705-5723-b6c5-f159e4564ddb
+		summarizeBy: none
+		sourceColumn: Value Tier
+		sortByColumn: 'Tier Order'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sort order of Value Tier.
+	column 'Tier Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 0e0be71e-dc7c-5e82-b608-09b465c649c6
+		summarizeBy: none
+		sourceColumn: Tier Order
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Marketing action for the customer.
+	column Action
+		dataType: string
+		lineageTag: 476a55a0-7560-5dc6-b3a8-87e2c4bd6d82
+		summarizeBy: none
+		sourceColumn: Action
+		sortByColumn: 'Action Order'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sort order of Action.
+	column 'Action Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 1452314d-c743-5ee5-a1c6-7db33a777c20
+		summarizeBy: none
+		sourceColumn: Action Order
+
+		annotation SummarizationSetBy = Automatic
+
+	/// The rule that puts a customer in the action group.
+	column 'Action Rule'
+		dataType: string
+		lineageTag: 3243d21f-48b1-5594-93c8-b840d9504ef1
+		summarizeBy: none
+		sourceColumn: Action Rule
+
+		annotation SummarizationSetBy = Automatic
+
+	/// What to do with the action group.
+	column 'Action Advice'
+		dataType: string
+		lineageTag: 1fd306f3-3b56-5194-927c-f8e76fb8a92d
+		summarizeBy: none
+		sourceColumn: Action Advice
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Customer = m
+		mode: import
+		source =
+				let
+				    Sheet = Workbook{[Item = "Customer", Kind = "Sheet"]}[Data],
+				    Headers = Table.PromoteHeaders(Sheet, [PromoteAllScalars = true]),
+				    Kept = Table.SelectColumns(Headers, {"Customer ID", "Customer Name"}),
+				    Typed = Table.TransformColumnTypes(Kept, {{"Customer ID", type text}, {"Customer Name", type text}}),
+				    Trimmed = Table.TransformColumns(Typed, {{"Customer ID", Text.Trim, type text}, {"Customer Name", Text.Trim, type text}}),
+				    Customers = Table.Distinct(Table.SelectRows(Trimmed, each [Customer ID] <> null), {"Customer ID"}),
+				    // The latest order date in the data is treated as "today"
+				    LatestDate = List.Max(OrdersBase[Order Date]),
+				    WindowStart = Date.AddDays(LatestDate, -180),
+				    Stats = Table.Group(OrdersBase, {"Customer ID"}, {
+				        {"Segment", each List.First([Segment]), type text},
+				        {"First Order Date", each List.Min([Order Date]), type date},
+				        {"Last Order Date", each List.Max([Order Date]), type date},
+				        {"Lifetime Orders", each List.Count(List.Distinct([Order ID])), Int64.Type},
+				        {"Lifetime Sales", each List.Sum([Net Sales]), type number},
+				        {"Sales Last 180 Days", each List.Sum(Table.SelectRows(_, (r) => r[Order Date] > WindowStart)[Net Sales]), type number}
+				    }),
+				    Joined = Table.NestedJoin(Customers, {"Customer ID"}, Stats, {"Customer ID"}, "Stats", JoinKind.LeftOuter),
+				    Expanded = Table.ExpandTableColumn(Joined, "Stats", {"Segment", "First Order Date", "Last Order Date", "Lifetime Orders", "Lifetime Sales", "Sales Last 180 Days"}),
+				    NoNulls = Table.TransformColumns(Expanded, {{"Segment", each if _ = null then "No orders" else _, type text}, {"Lifetime Orders", each if _ = null then 0 else _, Int64.Type}, {"Lifetime Sales", each if _ = null then 0 else _, type number}, {"Sales Last 180 Days", each if _ = null then 0 else _, type number}}),
+				    Retyped = Table.TransformColumnTypes(NoNulls, {{"First Order Date", type date}, {"Last Order Date", type date}}),
+				    AddFirstYear = Table.AddColumn(Retyped, "First Order Year", each if [First Order Date] = null then null else Date.Year([First Order Date]), Int64.Type),
+				    Buffered = Table.Buffer(AddFirstYear),
+				    // Score 1 to 5: which fifth of customers the value falls in. Equal values always get the same score.
+				    AddScore = (t as table, valueColumn as text, scoreColumn as text) as table =>
+				        let
+				            RowCount = Table.RowCount(t),
+				            Sorted = List.Buffer(List.Sort(Table.Column(t, valueColumn)))
+				        in
+				            Table.AddColumn(t, scoreColumn, each Number.RoundDown(List.PositionOf(Sorted, Record.Field(_, valueColumn)) * 5 / RowCount) + 1, Int64.Type),
+				    WithR = AddScore(Buffered, "Sales Last 180 Days", "R Score"),
+				    WithF = AddScore(WithR, "Lifetime Orders", "F Score"),
+				    WithM = AddScore(WithF, "Lifetime Sales", "M Score"),
+				    AddRfm = Table.AddColumn(WithM, "RFM Score", each [R Score] + [F Score] + [M Score], Int64.Type),
+				    AddTier = Table.AddColumn(AddRfm, "Value Tier", each if [RFM Score] >= 12 then "High" else if [RFM Score] >= 8 then "Medium" else "Low", type text),
+				    AddTierOrder = Table.AddColumn(AddTier, "Tier Order", each if [Value Tier] = "High" then 1 else if [Value Tier] = "Medium" then 2 else 3, Int64.Type),
+				    // Bonus: one marketing action per customer
+				    AddActionOrder = Table.AddColumn(AddTierOrder, "Action Order", each
+				        if [M Score] >= 4 and [Sales Last 180 Days] = 0 then 1
+				        else if [Value Tier] = "High" then 2
+				        else if [Value Tier] = "Medium" and [Sales Last 180 Days] > 0 then 3
+				        else if [Sales Last 180 Days] > 0 then 4
+				        else 5, Int64.Type),
+				    AddAction = Table.AddColumn(AddActionOrder, "Action", each {"Win back", "Reward and keep", "Grow", "Nurture", "Lapsed, low value"}{[Action Order] - 1}, type text),
+				    AddRule = Table.AddColumn(AddAction, "Action Rule", each {"M score 4 or 5, nothing bought in the last 180 days", "High value tier", "Medium tier, bought in the last 180 days", "Low tier, bought in the last 180 days", "Everyone else with nothing bought in the last 180 days"}{[Action Order] - 1}, type text),
+				    AddAdvice = Table.AddColumn(AddRule, "Action Advice", each {"Personal call or offer from the sales person", "Loyalty benefits, no deep discounts", "Cross-sell categories they have not bought", "Low-cost email campaigns", "No spend for now"}{[Action Order] - 1}, type text)
+				in
+				    AddAdvice
+
+	annotation PBI_ResultType = Table
+

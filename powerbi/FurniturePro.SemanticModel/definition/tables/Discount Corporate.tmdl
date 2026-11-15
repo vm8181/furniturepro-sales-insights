@@ -1,0 +1,25 @@
+/// What-if input: discount % to test for the Corporate segment, 0 to 50.
+table 'Discount Corporate'
+	lineageTag: d4019471-2815-5567-b4df-c79db83b5e32
+
+	/// What-if input: discount % to test for the Corporate segment, 0 to 50.
+	column 'Corporate Discount %'
+		dataType: int64
+		formatString: 0
+		lineageTag: b5552a12-02a9-5cb7-aa55-b8b8516e5618
+		summarizeBy: none
+		sourceColumn: Corporate Discount %
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Discount Corporate' = m
+		mode: import
+		source =
+				let
+				    Values = List.Numbers(0, 51, 1),
+				    Result = Table.FromList(Values, Splitter.SplitByNothing(), type table [#"Corporate Discount %" = Int64.Type])
+				in
+				    Result
+
+	annotation PBI_ResultType = Table
+

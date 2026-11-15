@@ -1,0 +1,36 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["SourceFile","Workbook","OrdersBase","TargetBase","Orders","Sales Target","Date","Product","Customer","State","Sales Person","Trend Year","Discount Consumer","Discount Corporate","Discount Home Office","Volume Response","Top Customer %","Pareto Axis","Top N","Sales Basis","Insight"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table _Measures
+ref table Orders
+ref table 'Sales Target'
+ref table Date
+ref table Product
+ref table Customer
+ref table State
+ref table 'Sales Person'
+ref table 'Trend Year'
+ref table 'Discount Consumer'
+ref table 'Discount Corporate'
+ref table 'Discount Home Office'
+ref table 'Volume Response'
+ref table 'Top Customer %'
+ref table 'Pareto Axis'
+ref table 'Top N'
+ref table 'Sales Basis'
+ref table Insight
+
+ref cultureInfo en-US
+

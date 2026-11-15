@@ -1,0 +1,61 @@
+/// One row per product. Category and Sub-Category are filled down because the sheet uses merged cells.
+table Product
+	lineageTag: abd42706-9c2c-5250-bd3b-f76773148008
+
+	/// Product code.
+	column 'Product ID'
+		dataType: string
+		isHidden
+		isKey
+		lineageTag: c9ca7bb9-53fa-524e-bf53-130cd3a3742c
+		summarizeBy: none
+		sourceColumn: Product ID
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Product name.
+	column 'Product Name'
+		dataType: string
+		lineageTag: 481f0acb-05d2-5be4-8728-ea3633942e84
+		summarizeBy: none
+		sourceColumn: Product Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Furniture, Office Supplies or Technology.
+	column Category
+		dataType: string
+		lineageTag: 3c8d67e6-81a8-5e57-9bbb-ae66cf214392
+		summarizeBy: none
+		sourceColumn: Category
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Product group inside the category.
+	column Sub-Category
+		dataType: string
+		lineageTag: c4a05c53-08e0-5641-9bb6-ac4c54219ec0
+		summarizeBy: none
+		sourceColumn: Sub-Category
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Product = m
+		mode: import
+		source =
+				let
+				    Sheet = Workbook{[Item = "Product", Kind = "Sheet"]}[Data],
+				    Headers = Table.PromoteHeaders(Sheet, [PromoteAllScalars = true]),
+				    Kept = Table.SelectColumns(Headers, {"Product ID", "Product Name", "Category", "Sub-Category"}),
+				    Typed = Table.TransformColumnTypes(Kept, {{"Product ID", type text}, {"Product Name", type text}, {"Category", type text}, {"Sub-Category", type text}}),
+				    Trimmed = Table.TransformColumns(Typed, {{"Product ID", Text.Trim, type text}, {"Product Name", Text.Trim, type text}, {"Category", Text.Trim, type text}, {"Sub-Category", Text.Trim, type text}}),
+				    // Merged cells arrive as blanks: turn empty text into null, then fill down
+				    BlankToNull = Table.ReplaceValue(Trimmed, "", null, Replacer.ReplaceValue, {"Category", "Sub-Category"}),
+				    FilledDown = Table.FillDown(BlankToNull, {"Category", "Sub-Category"}),
+				    Valid = Table.SelectRows(FilledDown, each [Product ID] <> null),
+				    Result = Table.Distinct(Valid, {"Product ID"})
+				in
+				    Result
+
+	annotation PBI_ResultType = Table
+

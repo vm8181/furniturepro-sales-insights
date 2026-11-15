@@ -1,0 +1,26 @@
+/// The last 4 years in the data, for trend charts. Not linked to other tables, so the Year slicer does not hide the earlier years.
+table 'Trend Year'
+	lineageTag: d6b5fc59-29c6-5170-be74-c0223db3b09d
+
+	/// Calendar year.
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 55a1fd31-d55a-51ef-b64e-6ab47ef1e1d0
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Trend Year' = m
+		mode: import
+		source =
+				let
+				    Years = List.Sort(List.Distinct(List.Transform(OrdersBase[Order Date], Date.Year))),
+				    LastFour = List.LastN(Years, 4),
+				    Result = Table.FromList(LastFour, Splitter.SplitByNothing(), type table [Year = Int64.Type])
+				in
+				    Result
+
+	annotation PBI_ResultType = Table
+

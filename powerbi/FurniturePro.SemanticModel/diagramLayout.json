@@ -1,0 +1,256 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1158.5064618515919,
+            "y": 288.22669350335565
+          },
+          "nodeIndex": "_Measures",
+          "nodeLineageTag": "044a9f91-f011-58db-be7d-61ee11e6f9cc",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 746.56664882119276,
+            "y": 526.4533870067113
+          },
+          "nodeIndex": "Customer",
+          "nodeLineageTag": "a1d73408-937c-5a25-9a2f-1d2ed60f7782",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 334.17881981631035,
+            "y": 351.569723845731
+          },
+          "nodeIndex": "Date",
+          "nodeLineageTag": "5a113ac1-b3e0-5e4c-a04f-885f56addf90",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1442.5064618515919,
+            "y": 386.22669350335565
+          },
+          "nodeIndex": "Discount Consumer",
+          "nodeLineageTag": "58c63eef-0375-5a07-a2e1-51b2768448e8",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1726.5064618515919,
+            "y": 386.22669350335565
+          },
+          "nodeIndex": "Discount Corporate",
+          "nodeLineageTag": "d4019471-2815-5567-b4df-c79db83b5e32",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2010.5064618515919,
+            "y": 386.22669350335565
+          },
+          "nodeIndex": "Discount Home Office",
+          "nodeLineageTag": "c42d70ce-f1c2-5cce-939d-613a59ed3b4c",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2294.5064618515917,
+            "y": 374.22669350335565
+          },
+          "nodeIndex": "Insight",
+          "nodeLineageTag": "58dc8dbb-a379-5e02-9e53-a45fd5663594",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 618.41925680437362,
+            "y": 176.22121895093119
+          },
+          "nodeIndex": "Orders",
+          "nodeLineageTag": "557035c0-3d8c-54dd-b86a-3a6ef56e9513",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2578.5064618515917,
+            "y": 386.22669350335565
+          },
+          "nodeIndex": "Pareto Axis",
+          "nodeLineageTag": "1a80637a-41aa-5411-a817-c83b02bf765a",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 753.35430946731,
+            "y": -50
+          },
+          "nodeIndex": "Product",
+          "nodeLineageTag": "abd42706-9c2c-5250-bd3b-f76773148008",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2862.5064618515917,
+            "y": 374.22669350335565
+          },
+          "nodeIndex": "Sales Basis",
+          "nodeLineageTag": "db29e950-4975-5c24-8490-59ca54a888db",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 924.506461851592,
+            "y": 348.22965986539964
+          },
+          "nodeIndex": "Sales Person",
+          "nodeLineageTag": "218395de-9751-59f9-a3c8-7b95387a654a",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 231.49628193476224
+          },
+          "nodeIndex": "Sales Target",
+          "nodeLineageTag": "75cc2c2c-e126-581e-9624-7c0970fac866",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 334.18786682552332,
+            "y": 110.39473021879019
+          },
+          "nodeIndex": "State",
+          "nodeLineageTag": "63c931d0-11f1-5c13-b493-93e490262356",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 3146.5064618515917,
+            "y": 386.22669350335565
+          },
+          "nodeIndex": "Top Customer %",
+          "nodeLineageTag": "e600ac46-9615-58b5-8cf5-776999a4a62e",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 3430.5064618515917,
+            "y": 386.22669350335565
+          },
+          "nodeIndex": "Top N",
+          "nodeLineageTag": "e440431f-a6e4-5b93-a4bc-b302e93467d3",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 3714.5064618515917,
+            "y": 386.22669350335565
+          },
+          "nodeIndex": "Trend Year",
+          "nodeLineageTag": "d6b5fc59-29c6-5170-be74-c0223db3b09d",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 3998.5064618515917,
+            "y": 386.22669350335565
+          },
+          "nodeIndex": "Volume Response",
+          "nodeLineageTag": "3c7053b5-cebd-5820-9e0c-5c223fa1e0e2",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

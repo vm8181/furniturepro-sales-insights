@@ -1,0 +1,47 @@
+/// One row per state per month. Target is a sales amount in dollars.
+table 'Sales Target'
+	lineageTag: 75cc2c2c-e126-581e-9624-7c0970fac866
+
+	/// Links to State.
+	column State
+		dataType: string
+		isHidden
+		lineageTag: e938c521-5a48-513a-b278-cabfdae993e5
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	/// First day of the target month.
+	column 'Month Start'
+		dataType: dateTime
+		isHidden
+		formatString: mmm yyyy
+		lineageTag: f62372df-1e99-5c18-9706-c5864d5d9170
+		summarizeBy: none
+		sourceColumn: Month Start
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Sales target for the state and month.
+	column Target
+		dataType: double
+		formatString: \$#,0
+		lineageTag: 16a204c2-52a8-53e7-8512-62faea04104f
+		summarizeBy: sum
+		sourceColumn: Target
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Sales Target' = m
+		mode: import
+		source =
+				let
+				    Source = TargetBase
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+

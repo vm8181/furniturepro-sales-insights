@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "FurniturePro"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "a8edfaec-74fb-5bbd-9d44-7eee6547fd59"
+  }
+}
