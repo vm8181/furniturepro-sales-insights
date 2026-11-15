@@ -40,6 +40,33 @@ FurniturePro & Co. needed its sales dashboard redesigned so managers could read 
 
 ---
 
+## 🖼️ Report pages
+
+<table>
+<tr>
+<td align="center"><b>💡 Insights</b><br><img src="assets/screenshots/01-insights.jpg" width="440"></td>
+<td align="center"><b>📊 Overview</b><br><img src="assets/screenshots/02-overview.jpg" width="440"></td>
+</tr>
+<tr>
+<td align="center"><b>🎯 Targets</b><br><img src="assets/screenshots/03-targets.jpg" width="440"></td>
+<td align="center"><b>🧪 What-if</b><br><img src="assets/screenshots/04-what-if.jpg" width="440"></td>
+</tr>
+<tr>
+<td align="center"><b>📈 Pareto</b><br><img src="assets/screenshots/05-pareto.jpg" width="440"></td>
+<td align="center"><b>👥 RFM</b><br><img src="assets/screenshots/06-rfm.jpg" width="440"></td>
+</tr>
+<tr>
+<td align="center"><b>🧑‍🤝‍🧑 Team</b><br><img src="assets/screenshots/07-team.jpg" width="440"></td>
+<td align="center"><b>↩️ Returns</b><br><img src="assets/screenshots/08-returns.jpg" width="440"></td>
+</tr>
+<tr>
+<td align="center"><b>🔎 State detail (drill-through)</b><br><img src="assets/screenshots/09-state-detail.jpg" width="440"></td>
+<td align="center"><b>🔎 Customer detail (drill-through)</b><br><img src="assets/screenshots/10-customer-detail.jpg" width="440"></td>
+</tr>
+</table>
+
+---
+
 ## 🧰 Tools & technology
 
 | Layer | What I used |
@@ -64,10 +91,10 @@ FurniturePro & Co. needed its sales dashboard redesigned so managers could read 
 ## 🏗️ How it fits together
 ```mermaid
 flowchart LR
-    A[📄 Excel data] --> B[🧮 Semantic model<br/>17 tables · 170 measures]
-    B --> C[📊 10-page report]
-    D[🐍 Python build + checks] --> C
-    C --> E[💡 Decisions]
+    A["Excel data"] --> B["Semantic model: 17 tables, 170 measures"]
+    B --> C["10-page Power BI report"]
+    D["Python build and checks"] --> C
+    C --> E["Business decisions"]
 ```
 
 ## 📁 Repository layout
@@ -76,6 +103,7 @@ flowchart LR
  ┣ 📂 powerbi   FurniturePro.pbip + Report and SemanticModel
  ┣ 📂 data      FurniturePro_Data.xlsx
  ┣ 📂 tools     Python scripts that build and check the report
+ ┣ 📂 assets    Report page screenshots
  ┗ 📄 README.md
 ```
 
